@@ -1,13 +1,15 @@
-# attrim-dev-skills
+# Attrim dev plugins
 
 Marketplace público de plugins de [Claude Code](https://docs.claude.com/en/docs/claude-code) del equipo de desarrollo de Attrim: skills, comandos, agentes, hooks y configuración MCP.
+
+Documentación de todos los plugins: https://administracionattrim.github.io/dev-plugins
 
 ## Instalación
 
 Registra el marketplace en tu Claude Code:
 
 ```
-/plugin marketplace add attrim-org/attrim-dev-skills
+/plugin marketplace add AdministracionAttrim/dev-plugins
 ```
 
 Instala un plugin concreto:
@@ -19,7 +21,7 @@ Instala un plugin concreto:
 ## Estructura del repo
 
 ```
-attrim-dev-skills/
+dev-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json      # catálogo de plugins
 ├── plugins/
