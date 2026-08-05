@@ -1,0 +1,264 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FeatureSpec",
+  "description": "Typed spec consumed by scaffold-feature.mjs. All required fields must be present before the script runs.",
+  "type": "object",
+  "required": [
+    "entitySingular",
+    "entityPlural",
+    "featureName",
+    "moduleSrcPath",
+    "pagesKey",
+    "entitiesKey",
+    "backendBaseUrl",
+    "softDelete",
+    "permissions",
+    "fields",
+    "formSplit",
+    "translocoScope",
+    "i18nPath",
+    "parentRoutesFile",
+    "menuGroup"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "huId": {
+      "type": "string",
+      "description": "Identifier of the User Story (HU) that originated this feature — e.g. HU-17"
+    },
+    "entitySingular": {
+      "type": "string",
+      "description": "PascalCase entity name — e.g. Zone, BillableConcept"
+    },
+    "entityPlural": {
+      "type": "string",
+      "description": "camelCase plural — e.g. zones, billableConcepts"
+    },
+    "featureName": {
+      "type": "string",
+      "description": "kebab-case, used as folder name and route path — e.g. zones, billable-concepts"
+    },
+    "moduleSrcPath": {
+      "type": "string",
+      "description": "Relative path from src/app/modules/ to feature parent — e.g. master-data/configuration"
+    },
+    "pagesKey": {
+      "type": "string",
+      "description": "Key in PAGES constant (layout-pages.ts) — e.g. ZONES. If new, script prints the entry to add."
+    },
+    "entitiesKey": {
+      "type": "string",
+      "description": "Key in ENTITIES constant (entity-name.model.ts) — e.g. ZONES. If new, script prints the entry to add."
+    },
+    "backendBaseUrl": {
+      "type": "string",
+      "description": "Full base URL using environment variable — e.g. ${environment.apiGw.myservice.url}/zone (replace 'myservice' with your project's actual apiGw config key)"
+    },
+    "softDelete": {
+      "type": "boolean",
+      "description": "true = dar de baja (deletionDate), false = hard delete"
+    },
+    "activeEntityRouting": {
+      "type": "boolean",
+      "description": "true when the entity can be inactive and routes must guard against it. Defaults to softDelete value."
+    },
+    "entityStatus": {
+      "type": "object",
+      "description": "Field names for active/inactive status. Required when softDelete=true.",
+      "required": ["activeField", "inactiveField"],
+      "additionalProperties": false,
+      "properties": {
+        "activeField": { "type": "string", "description": "e.g. creationDate" },
+        "inactiveField": { "type": "string", "description": "e.g. deletionDate" }
+      }
+    },
+    "permissions": {
+      "type": "object",
+      "required": ["LIST", "DETAIL", "CREATE", "UPDATE", "DELETE"],
+      "additionalProperties": false,
+      "properties": {
+        "LIST":   { "type": "string", "description": "e.g. ZONE_LIST" },
+        "DETAIL": { "type": "string", "description": "e.g. ZONE_DETAIL" },
+        "CREATE": { "type": "string", "description": "e.g. ZONE_CREATE" },
+        "UPDATE": { "type": "string", "description": "e.g. ZONE_UPDATE" },
+        "DELETE": { "type": "string", "description": "e.g. ZONE_DELETE" },
+        "extras": {
+          "type": "array",
+          "description": "Additional permission codes beyond the 5 base",
+          "items": {
+            "type": "object",
+            "required": ["key", "code"],
+            "additionalProperties": false,
+            "properties": {
+              "key":  { "type": "string", "description": "TypeScript key — e.g. DELETE_ACCOUNT" },
+              "code": { "type": "string", "description": "Permission string code — e.g. COMPANY_ACCOUNT_DELETE" }
+            }
+          }
+        }
+      }
+    },
+    "fields": {
+      "type": "array",
+      "minItems": 1,
+      "description": "All entity fields except id (id is always generated). FK fields must include fkEntity.",
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "required", "inSearch", "labelEs", "labelEn"],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "camelCase field name — e.g. externalCode, supply"
+          },
+          "type": {
+            "type": "string",
+            "description": "TS type: string | number | boolean | Date — or FK type name (e.g. SupplySearch, Periodicity)"
+          },
+          "required": {
+            "type": "boolean",
+            "description": "true = non-nullable in Entity; required validator in FormBuilder"
+          },
+          "inSearch": {
+            "type": "boolean",
+            "description": "true = include in EntitySearch type and in table COLUMNS constant"
+          },
+          "labelEs": {
+            "type": "string",
+            "description": "Spanish label — used in es.json and form.labels"
+          },
+          "labelEn": {
+            "type": "string",
+            "description": "English label — used in en.json and form.labels"
+          },
+          "maxLength": {
+            "type": "number",
+            "description": "Validators.maxLength value for string fields"
+          },
+          "fkEntity": {
+            "type": "string",
+            "description": "FK type name — must match type when type is non-primitive. e.g. SupplySearch"
+          },
+          "selector": {
+            "type": "string",
+            "description": "Selector component tag for FK field — e.g. app-supply-selector"
+          },
+          "i18nKey": {
+            "type": "string",
+            "description": "Override i18n key for form.labels — defaults to field.name if omitted"
+          }
+        }
+      }
+    },
+    "formSplit": {
+      "type": "string",
+      "enum": ["simple", "split", "split+workflow"],
+      "description": "simple = zones canonical | split = companies canonical | split+workflow = pucs canonical"
+    },
+    "filterFieldName": {
+      "type": "string",
+      "description": "Service.filterFieldName override. Defaults to first required string field."
+    },
+    "translocoScope": {
+      "type": "string",
+      "description": "Transloco scope name — used in provideTranslocoScope. e.g. zones, supplyBillingYears"
+    },
+    "i18nPath": {
+      "type": "string",
+      "description": "Path under public/i18n/modules/ WITHOUT feature folder — e.g. master-data/configuration"
+    },
+    "parentRoutesFile": {
+      "type": "string",
+      "description": "Relative path from project root to the parent routes file that must register this feature — e.g. src/app/modules/master-data/configuration/configuration.routes.ts"
+    },
+    "menuGroup": {
+      "type": "string",
+      "description": "Identifier of the menu group in menu.service.ts where PAGES.{pagesKey} must be added — e.g. configuration, periodicBilling"
+    },
+    "tabs": {
+      "type": "array",
+      "description": "Form tabs for CONTENT_INDEX and i18n. Defaults to a single basicData tab if omitted.",
+      "items": {
+        "type": "object",
+        "required": ["label", "titleEs", "titleEn", "sections"],
+        "additionalProperties": false,
+        "properties": {
+          "label": { "type": "string", "description": "camelCase tab key — e.g. basicData, parameters" },
+          "titleEs": { "type": "string", "description": "Spanish tab title" },
+          "titleEn": { "type": "string", "description": "English tab title" },
+          "sections": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["key", "icon", "titleEs", "titleEn", "descriptionEs", "descriptionEn"],
+              "additionalProperties": false,
+              "properties": {
+                "key":           { "type": "string", "description": "camelCase section key — e.g. generalInfo, fiscalAddress" },
+                "icon":          { "type": "string", "description": "FontAwesome class string — e.g. fa-duotone fa-regular fa-circle-info text-primary" },
+                "titleEs":       { "type": "string" },
+                "titleEn":       { "type": "string" },
+                "descriptionEs": { "type": "string" },
+                "descriptionEn": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "formArrays": {
+      "type": "array",
+      "description": "Staging tables / editable sub-entities in the form",
+      "items": {
+        "type": "object",
+        "required": ["name", "itemType", "editable"],
+        "additionalProperties": false,
+        "properties": {
+          "name":     { "type": "string", "description": "FormArray field name — e.g. companyAccounts" },
+          "itemType": { "type": "string", "description": "Item TS type — e.g. CompanyAccountsForm" },
+          "editable": { "type": "boolean", "description": "true → useEditableTable + useFormTableEditable" }
+        }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "description": "Required when formSplit=split+workflow",
+      "required": ["statuses", "transitions"],
+      "additionalProperties": false,
+      "properties": {
+        "statuses": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "All possible status values — e.g. [DRAFT, PENDING, APPROVED, REJECTED]"
+        },
+        "transitions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["from", "to", "action"],
+            "additionalProperties": false,
+            "properties": {
+              "from":   { "type": "string" },
+              "to":     { "type": "string" },
+              "action": { "type": "string", "description": "Action name — e.g. approve, reject, submit" }
+            }
+          }
+        }
+      }
+    },
+    "ui": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layout": {
+          "type": "string",
+          "enum": ["standard", "custom"],
+          "description": "standard = script generates L6+L7 structure | custom = script skips L6+L7, LLM generates from scratch"
+        },
+        "hasExport": {
+          "type": "boolean",
+          "description": "true = list uses p-splitButton with export option (LE-0028)"
+        }
+      }
+    }
+  }
+}

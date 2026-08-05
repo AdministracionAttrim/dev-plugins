@@ -1,0 +1,10 @@
+{
+  "name": "dev-agent-system-angular",
+  "version": "1.0.0",
+  "description": "Preset Angular 20+ / PrimeNG / Tailwind / NgRx Signal Store para dev-agent-system-core. Aporta reglas de arquitectura (copiadas al proyecto por el init como base editable), skills de scaffolding/auditoría/sincronización de modelos y MCP servers de angular-cli y primeng. Requiere configurar la ruta del repo backend y la clave del API gateway del proyecto antes del primer uso (ver README).",
+  "author": {
+    "name": "Pablo Miguel Argudo"
+  },
+  "keywords": ["angular", "primeng", "ngrx", "tailwind"],
+  "mcpServers": "./.mcp.json"
+}

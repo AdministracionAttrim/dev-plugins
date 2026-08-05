@@ -1,0 +1,7 @@
+{
+  "name": "dev-explain-branch",
+  "version": "1.0.0",
+  "description": "Genera la descripción de una Merge Request a partir del diff de la rama actual, filtrando lo que de verdad le importa a un reviewer. Opcionalmente (--azure=<ID>) publica además un resumen técnico como comentario en un work item de Azure DevOps, previa confirmación explícita. Agnóstico de stack en el modo MR; el modo Azure requiere configurar AZURE_ORG/AZURE_PROJECT/AZURE_PAT — ver README.",
+  "author": { "name": "Ignacio Sirvent" },
+  "keywords": ["git", "merge-request", "code-review", "azure-devops"]
+}

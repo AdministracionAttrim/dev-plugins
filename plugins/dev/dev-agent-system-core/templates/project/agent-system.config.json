@@ -1,0 +1,38 @@
+{
+  "$schema-doc": "Configuración por proyecto del agent-system. Generada por /agent-system-core:init. Los hooks y agentes del plugin leen este fichero; edítalo libremente, es tuyo.",
+  "project": {
+    "name": "{{PROJECT_NAME}}",
+    "stack": "{{STACK_SUMMARY}}",
+    "leInitials": "{{LE_INITIALS}}"
+  },
+  "commands": {
+    "build": "npm run build",
+    "lint": "npm run lint",
+    "format": "npm run format",
+    "test": "npm run test",
+    "wikiLint": "",
+    "wikiResearch": ""
+  },
+  "hooks": {
+    "postEdit": {
+      "format": "",
+      "lint": "",
+      "include": "\\.(ts|tsx|js|jsx|mjs|cjs|html|css|scss)$",
+      "exclude": "\\.(spec|test|mock)\\."
+    }
+  },
+  "paths": {
+    "wiki": "docs/wiki",
+    "inbox": "docs/raw/inbox",
+    "knowledgeLog": "docs/wiki/knowledge-log.md"
+  },
+  "rules": {
+    "alwaysOn": [
+      ".claude/rules/code-generation.md",
+      ".claude/rules/code-quality-guardrails.md",
+      ".claude/rules/self-learning-error-prevention.md"
+    ],
+    "onDemand": []
+  },
+  "canonicalExamples": {}
+}

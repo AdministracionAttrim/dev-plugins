@@ -1,0 +1,8 @@
+{
+  "name": "dev-statusline",
+  "version": "1.0.0",
+  "description": "Statusline personalizada para Claude Code: modelo, proyecto, rama git y barras de uso de contexto/rate-limits (5h y 7d). Incluye el comando /instalar-statusline para activarla.",
+  "author": {
+    "name": "Attrim - equipo dev"
+  }
+}

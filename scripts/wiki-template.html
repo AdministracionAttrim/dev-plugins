@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>__MARKETPLACE_NAME__ — Wiki de plugins</title>
+<meta name="description" content="__MARKETPLACE_DESC__">
+<style>
+  :root {
+    --bg: #f7f7f8;
+    --bg-elevated: #ffffff;
+    --bg-sunken: #eef0f2;
+    --text: #1b1e24;
+    --text-muted: #5b6270;
+    --border: #e0e2e6;
+    --accent: #6a4cff;
+    --accent-contrast: #ffffff;
+    --code-bg: #f0eefc;
+    --badge-bg: #ece9ff;
+    --badge-text: #4a30d9;
+    --kw-bg: #eef0f2;
+    --kw-text: #444b57;
+    --shadow: 0 1px 3px rgba(20,20,30,0.08);
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  :root[data-theme="dark"] {
+    --bg: #14151a;
+    --bg-elevated: #1c1e25;
+    --bg-sunken: #101115;
+    --text: #e7e8ec;
+    --text-muted: #9297a5;
+    --border: #2a2d36;
+    --accent: #9c86ff;
+    --accent-contrast: #0d0e12;
+    --code-bg: #232537;
+    --badge-bg: #2c2650;
+    --badge-text: #c3b6ff;
+    --kw-bg: #232530;
+    --kw-text: #b7bcc8;
+    --shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14151a;
+      --bg-elevated: #1c1e25;
+      --bg-sunken: #101115;
+      --text: #e7e8ec;
+      --text-muted: #9297a5;
+      --border: #2a2d36;
+      --accent: #9c86ff;
+      --accent-contrast: #0d0e12;
+      --code-bg: #232537;
+      --badge-bg: #2c2650;
+      --badge-text: #c3b6ff;
+      --kw-bg: #232530;
+      --kw-text: #b7bcc8;
+      --shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    background: var(--bg-elevated);
+    border-right: 1px solid var(--border);
+    padding: 1.25rem 1rem;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar h1 {
+    font-size: 1.05rem;
+    margin: 0 0 0.15rem;
+  }
+  .sidebar .subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
+  }
+  .search-box {
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-sunken);
+    color: var(--text);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+  .search-box:focus { outline: 2px solid var(--accent); }
+  .nav-group h3 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin: 1.1rem 0 0.35rem;
+  }
+  .nav-group ul { list-style: none; margin: 0; padding: 0; }
+  .nav-group li { margin: 0.1rem 0; }
+  .nav-group a {
+    display: block;
+    color: var(--text);
+    font-size: 0.86rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+  }
+  .nav-group a:hover, .nav-group a.active {
+    background: var(--badge-bg);
+    color: var(--badge-text);
+    text-decoration: none;
+  }
+  .nav-group li.hidden { display: none; }
+
+  .theme-toggle {
+    margin-top: 1.25rem;
+    width: 100%;
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-sunken);
+    color: var(--text);
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+
+  .main {
+    padding: 2rem 2.5rem 5rem;
+    max-width: 900px;
+  }
+  .intro {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .intro h1 { font-size: 1.9rem; margin: 0 0 0.4rem; }
+  .intro p { color: var(--text-muted); max-width: 640px; }
+  .meta-line { font-size: 0.78rem; color: var(--text-muted); }
+
+  .category-title {
+    font-size: 1.5rem;
+    margin: 2.5rem 0 1rem;
+    padding-top: 1rem;
+  }
+  section.category:first-of-type .category-title { margin-top: 0; }
+
+  article.plugin {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.75rem;
+    box-shadow: var(--shadow);
+    scroll-margin-top: 1rem;
+  }
+  .plugin-header h2 {
+    font-size: 1.25rem;
+    margin: 0 0 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    background: var(--badge-bg);
+    color: var(--badge-text);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+  }
+  .plugin-desc { color: var(--text-muted); margin: 0 0 0.6rem; font-size: 0.93rem; }
+  .keywords { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+  .kw {
+    font-size: 0.7rem;
+    background: var(--kw-bg);
+    color: var(--kw-text);
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+  }
+  .plugin-body { margin-top: 1.1rem; }
+  .plugin-body h2 { font-size: 1.1rem; margin: 1.6rem 0 0.6rem; border-top: 1px solid var(--border); padding-top: 1.2rem; }
+  .plugin-body h3 { font-size: 0.98rem; margin: 1.2rem 0 0.5rem; }
+  .plugin-body h4 { font-size: 0.9rem; margin: 1rem 0 0.4rem; }
+  .plugin-body p { margin: 0.5rem 0; font-size: 0.92rem; }
+  .plugin-body ul, .plugin-body ol { font-size: 0.92rem; padding-left: 1.4rem; }
+  .plugin-body li { margin: 0.25rem 0; }
+  .plugin-body code {
+    font-family: var(--font-mono);
+    background: var(--code-bg);
+    padding: 0.1rem 0.35rem;
+    border-radius: 5px;
+    font-size: 0.85em;
+  }
+  .plugin-body pre {
+    background: var(--bg-sunken);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    overflow-x: auto;
+    font-size: 0.83rem;
+  }
+  .plugin-body pre code { background: none; padding: 0; }
+  .table-wrap { overflow-x: auto; margin: 0.75rem 0; }
+  .plugin-body table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.85rem;
+  }
+  .plugin-body th, .plugin-body td {
+    border: 1px solid var(--border);
+    padding: 0.45rem 0.6rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .plugin-body th { background: var(--bg-sunken); }
+
+  .back-to-top {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  footer.page-footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    padding: 2rem 0 3rem;
+  }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar {
+      position: relative;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .main { padding: 1.5rem 1.25rem 3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <h1>__MARKETPLACE_NAME__</h1>
+    <p class="subtitle">Wiki de plugins · __PLUGIN_COUNT__ plugins</p>
+    <input type="search" class="search-box" id="search" placeholder="Buscar plugin, palabra clave…" autocomplete="off">
+    __NAV__
+    <button class="theme-toggle" id="theme-toggle" type="button">🌓 Cambiar tema</button>
+  </nav>
+  <main class="main">
+    <div class="intro">
+      <h1>__MARKETPLACE_NAME__</h1>
+      <p>__MARKETPLACE_DESC__</p>
+      <p class="meta-line">Generado a partir de <code>marketplace.json</code> y el <code>README.md</code> de cada plugin · última actualización: __GENERATED_AT__</p>
+    </div>
+    __SECTIONS__
+    <footer class="page-footer">
+      Documentación generada automáticamente con <code>scripts/build-wiki.js</code>. Para actualizarla tras cambiar un README, vuelve a ejecutar ese script.
+    </footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var STORAGE_KEY = "attrim-wiki-theme";
+  var root = document.documentElement;
+  var toggle = document.getElementById("theme-toggle");
+
+  function applyTheme(theme) {
+    if (theme === "dark" || theme === "light") {
+      root.setAttribute("data-theme", theme);
+    } else {
+      root.removeAttribute("data-theme");
+    }
+  }
+
+  var saved = null;
+  try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+  applyTheme(saved);
+
+  toggle.addEventListener("click", function () {
+    var current = root.getAttribute("data-theme");
+    var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var effectiveCurrent = current || (prefersDark ? "dark" : "light");
+    var next = effectiveCurrent === "dark" ? "light" : "dark";
+    applyTheme(next);
+    try { localStorage.setItem(STORAGE_KEY, next); } catch (e) {}
+  });
+
+  // Búsqueda: filtra la navegación por nombre/keywords/descripción.
+  var searchIndex = __SEARCH_INDEX__;
+  var searchBox = document.getElementById("search");
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll(".nav-group a[data-nav]"));
+
+  searchBox.addEventListener("input", function () {
+    var q = searchBox.value.trim().toLowerCase();
+    navLinks.forEach(function (link) {
+      var id = link.getAttribute("data-nav");
+      var entry = searchIndex.filter(function (e) { return e.id === id; })[0];
+      var match = !q || (entry && (entry.name.toLowerCase().indexOf(q) !== -1 || entry.text.indexOf(q) !== -1));
+      link.parentElement.classList.toggle("hidden", !match);
+    });
+  });
+
+  // Resalta en la nav el plugin visible mientras se hace scroll.
+  var sections = Array.prototype.slice.call(document.querySelectorAll("article.plugin"));
+  if ("IntersectionObserver" in window && sections.length) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var link = document.querySelector('.nav-group a[data-nav="' + entry.target.id + '"]');
+        if (!link) return;
+        if (entry.isIntersecting) {
+          navLinks.forEach(function (l) { l.classList.remove("active"); });
+          link.classList.add("active");
+        }
+      });
+    }, { rootMargin: "-10% 0px -70% 0px" });
+    sections.forEach(function (s) { observer.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>

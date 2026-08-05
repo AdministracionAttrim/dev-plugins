@@ -1,0 +1,7 @@
+{
+  "name": "dev-agent-system-dotnet",
+  "version": "1.0.0",
+  "description": "Preset .NET / ASP.NET Core para dev-agent-system-core: reglas de arquitectura (capas+módulos, EF Core, JWT/Keycloak, manejo de errores), skills de scaffolding/auditoría/migraciones/pre-commit, y errores aprendidos semilla. Requiere dev-agent-system-core. Antes del primer uso hay que sustituir los placeholders de proyecto (namespace raíz, proyectos, providers externos, esquemas JWT, puertos) — ver README.",
+  "author": { "name": "Mariano Álvarez" },
+  "keywords": ["dotnet", "aspnetcore", "efcore", "csharp"]
+}

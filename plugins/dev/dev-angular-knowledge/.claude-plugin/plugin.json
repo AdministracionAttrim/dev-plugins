@@ -1,0 +1,8 @@
+{
+  "name": "dev-angular-knowledge",
+  "version": "1.0.0",
+  "description": "Capacidad completa de desarrollo Angular para Claude Code, en espanol: componentes, DI, signals, forms, routing, HTTP, testing, styling, tooling y creacion de proyectos nuevos (bundle oficial de Angular/Google, MIT, traducido), mas guardrails de calidad, separacion de responsabilidades en formularios complejos y registro de errores conocidos aportados por el equipo dev de Attrim. Incluye agentes de arquitectura, revision, tests y migracion.",
+  "author": {
+    "name": "Attrim - equipo dev"
+  }
+}

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>attrim-dev-skills — Wiki de plugins</title>
+<meta name="description" content="Marketplace público de plugins de Claude Code del equipo de desarrollo de Attrim.">
+<style>
+  :root {
+    --bg: #f7f7f8;
+    --bg-elevated: #ffffff;
+    --bg-sunken: #eef0f2;
+    --text: #1b1e24;
+    --text-muted: #5b6270;
+    --border: #e0e2e6;
+    --accent: #6a4cff;
+    --accent-contrast: #ffffff;
+    --code-bg: #f0eefc;
+    --badge-bg: #ece9ff;
+    --badge-text: #4a30d9;
+    --kw-bg: #eef0f2;
+    --kw-text: #444b57;
+    --shadow: 0 1px 3px rgba(20,20,30,0.08);
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  :root[data-theme="dark"] {
+    --bg: #14151a;
+    --bg-elevated: #1c1e25;
+    --bg-sunken: #101115;
+    --text: #e7e8ec;
+    --text-muted: #9297a5;
+    --border: #2a2d36;
+    --accent: #9c86ff;
+    --accent-contrast: #0d0e12;
+    --code-bg: #232537;
+    --badge-bg: #2c2650;
+    --badge-text: #c3b6ff;
+    --kw-bg: #232530;
+    --kw-text: #b7bcc8;
+    --shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14151a;
+      --bg-elevated: #1c1e25;
+      --bg-sunken: #101115;
+      --text: #e7e8ec;
+      --text-muted: #9297a5;
+      --border: #2a2d36;
+      --accent: #9c86ff;
+      --accent-contrast: #0d0e12;
+      --code-bg: #232537;
+      --badge-bg: #2c2650;
+      --badge-text: #c3b6ff;
+      --kw-bg: #232530;
+      --kw-text: #b7bcc8;
+      --shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    background: var(--bg-elevated);
+    border-right: 1px solid var(--border);
+    padding: 1.25rem 1rem;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar h1 {
+    font-size: 1.05rem;
+    margin: 0 0 0.15rem;
+  }
+  .sidebar .subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
+  }
+  .search-box {
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-sunken);
+    color: var(--text);
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+  .search-box:focus { outline: 2px solid var(--accent); }
+  .nav-group h3 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin: 1.1rem 0 0.35rem;
+  }
+  .nav-group ul { list-style: none; margin: 0; padding: 0; }
+  .nav-group li { margin: 0.1rem 0; }
+  .nav-group a {
+    display: block;
+    color: var(--text);
+    font-size: 0.86rem;
+    padding: 0.3rem 0.5rem;
+    border-radius: 6px;
+  }
+  .nav-group a:hover, .nav-group a.active {
+    background: var(--badge-bg);
+    color: var(--badge-text);
+    text-decoration: none;
+  }
+  .nav-group li.hidden { display: none; }
+
+  .theme-toggle {
+    margin-top: 1.25rem;
+    width: 100%;
+    padding: 0.45rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg-sunken);
+    color: var(--text);
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+
+  .main {
+    padding: 2rem 2.5rem 5rem;
+    max-width: 900px;
+  }
+  .intro {
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .intro h1 { font-size: 1.9rem; margin: 0 0 0.4rem; }
+  .intro p { color: var(--text-muted); max-width: 640px; }
+  .meta-line { font-size: 0.78rem; color: var(--text-muted); }
+
+  .category-title {
+    font-size: 1.5rem;
+    margin: 2.5rem 0 1rem;
+    padding-top: 1rem;
+  }
+  section.category:first-of-type .category-title { margin-top: 0; }
+
+  article.plugin {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.75rem;
+    box-shadow: var(--shadow);
+    scroll-margin-top: 1rem;
+  }
+  .plugin-header h2 {
+    font-size: 1.25rem;
+    margin: 0 0 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    background: var(--badge-bg);
+    color: var(--badge-text);
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+  }
+  .plugin-desc { color: var(--text-muted); margin: 0 0 0.6rem; font-size: 0.93rem; }
+  .keywords { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+  .kw {
+    font-size: 0.7rem;
+    background: var(--kw-bg);
+    color: var(--kw-text);
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+  }
+  .plugin-body { margin-top: 1.1rem; }
+  .plugin-body h2 { font-size: 1.1rem; margin: 1.6rem 0 0.6rem; border-top: 1px solid var(--border); padding-top: 1.2rem; }
+  .plugin-body h3 { font-size: 0.98rem; margin: 1.2rem 0 0.5rem; }
+  .plugin-body h4 { font-size: 0.9rem; margin: 1rem 0 0.4rem; }
+  .plugin-body p { margin: 0.5rem 0; font-size: 0.92rem; }
+  .plugin-body ul, .plugin-body ol { font-size: 0.92rem; padding-left: 1.4rem; }
+  .plugin-body li { margin: 0.25rem 0; }
+  .plugin-body code {
+    font-family: var(--font-mono);
+    background: var(--code-bg);
+    padding: 0.1rem 0.35rem;
+    border-radius: 5px;
+    font-size: 0.85em;
+  }
+  .plugin-body pre {
+    background: var(--bg-sunken);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    overflow-x: auto;
+    font-size: 0.83rem;
+  }
+  .plugin-body pre code { background: none; padding: 0; }
+  .table-wrap { overflow-x: auto; margin: 0.75rem 0; }
+  .plugin-body table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.85rem;
+  }
+  .plugin-body th, .plugin-body td {
+    border: 1px solid var(--border);
+    padding: 0.45rem 0.6rem;
+    text-align: left;
+    vertical-align: top;
+  }
+  .plugin-body th { background: var(--bg-sunken); }
+
+  .back-to-top {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  footer.page-footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    padding: 2rem 0 3rem;
+  }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar {
+      position: relative;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .main { padding: 1.5rem 1.25rem 3rem; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <nav class="sidebar">
+    <h1>attrim-dev-skills</h1>
+    <p class="subtitle">Wiki de plugins · 12 plugins</p>
+    <input type="search" class="search-box" id="search" placeholder="Buscar plugin, palabra clave…" autocomplete="off">
+    <div class="nav-group"><h3>Desarrollo</h3><ul><li><a href="#dev-agent-system-angular" data-nav="dev-agent-system-angular">dev-agent-system-angular</a></li><li><a href="#dev-agent-system-core" data-nav="dev-agent-system-core">dev-agent-system-core</a></li><li><a href="#dev-agent-system-dotnet" data-nav="dev-agent-system-dotnet">dev-agent-system-dotnet</a></li><li><a href="#dev-agent-system-java" data-nav="dev-agent-system-java">dev-agent-system-java</a></li><li><a href="#dev-angular-knowledge" data-nav="dev-angular-knowledge">dev-angular-knowledge</a></li><li><a href="#dev-claude-config-audit" data-nav="dev-claude-config-audit">dev-claude-config-audit</a></li><li><a href="#dev-dynamic-memory" data-nav="dev-dynamic-memory">dev-dynamic-memory</a></li><li><a href="#dev-explain-branch" data-nav="dev-explain-branch">dev-explain-branch</a></li><li><a href="#dev-java-knowledge" data-nav="dev-java-knowledge">dev-java-knowledge</a></li><li><a href="#dev-mapbox-integration" data-nav="dev-mapbox-integration">dev-mapbox-integration</a></li><li><a href="#dev-statusline" data-nav="dev-statusline">dev-statusline</a></li><li><a href="#dev-superarchitect" data-nav="dev-superarchitect">dev-superarchitect</a></li></ul></div>
+    <button class="theme-toggle" id="theme-toggle" type="button">🌓 Cambiar tema</button>
+  </nav>
+  <main class="main">
+    <div class="intro">
+      <h1>attrim-dev-skills</h1>
+      <p>Marketplace público de plugins de Claude Code del equipo de desarrollo de Attrim.</p>
+      <p class="meta-line">Generado a partir de <code>marketplace.json</code> y el <code>README.md</code> de cada plugin · última actualización: 2026-08-05</p>
+    </div>
+    <section class="category" id="cat-dev"><h1 class="category-title">Desarrollo</h1>
+      <article class="plugin" id="dev-agent-system-angular" data-category="dev">
+        <header class="plugin-header">
+          <h2>dev-agent-system-angular <span class="badge">v1.0.0</span></h2>
+          <p class="plugin-desc">Preset de stack Angular 20+ / PrimeNG / Tailwind / NgRx Signal Store para dev-agent-system-core: reglas de arquitectura, feature-scaffolding, audit-module, sync-models, hu-refinement y MCP servers (angular-cli, primeng). Requiere dev-agent-system-core. Antes del primer uso hay que configurar la ruta del repo backend de commons y la clave del API gateway del proyecto (ver README).</p>
+          <div class="keywords"><span class="kw">angular</span><span class="kw">primeng</span><span class="kw">ngrx</span><span class="kw">tailwind</span></div>
+        </header>
+        <div class="plugin-body">
+          <p>Preset de stack para <code>agent-system-core</code>. No hace nada por sí solo: <code>/agent-system-core:init</code> detecta este plugin y copia su contenido al proyecto como base editable.</p>
+<h3 id="dev-agent-system-angular-que-aporta">Qué aporta</h3>
+<div class="table-wrap"><table><thead><tr><th>Contenido</th><th>Destino en el proyecto</th><th>Rol</th></tr></thead><tbody><tr><td><code>templates/rules/*.md</code></td><td><code>.claude/rules/</code></td><td>Reglas always-on: arquitectura core, code-generation Angular, UI components</td></tr><tr><td><code>templates/rules-on-demand/*.md</code></td><td><code>.claude/rules-on-demand/</code></td><td>Reglas bajo demanda: forms, i18n, stores, permisos</td></tr><tr><td><code>templates/scripts/*</code></td><td><code>scripts/</code></td><td>check-i18n, scaffold-feature, sync de modelos vs swagger</td></tr><tr><td><code>templates/workflows/*</code></td><td><code>.claude/workflows/</code></td><td>Motores dinámicos de audit-module y feature-scaffolding</td></tr><tr><td><code>skills/</code></td><td>(viven en el plugin)</td><td>feature-scaffolding, audit-module, sync-models, hu-refinement, wiki-optimizer</td></tr><tr><td><code>.mcp.json</code></td><td>(vive en el plugin)</td><td>MCP servers angular-cli y primeng</td></tr></tbody></table></div>
+<h3 id="dev-agent-system-angular-como-usarlo">Cómo usarlo</h3>
+<p>Una vez instalado (via <code>/agent-system-core:init</code>), las skills se invocan como slash commands normales. Ejemplos reales:</p>
+<ul><li><strong><code>/feature-scaffolding HU-3055</code></strong> — genera una feature CRUD completa (data-access + rutas + constants + list + form + i18n) a partir de una user story de Azure DevOps. Con <code>--verify</code> (<code>/feature-scaffolding HU-3055 --verify</code>) añade una fase de validación paralela (spec + código + tests + arquitectura) antes de implementar L6/L7.</li><li><strong><code>/audit-module companies</code></strong> — auditoría completa de un módulo ya implementado: compliance contra las HUs asociadas (via <code>component-feature-mapping.json</code>), behavioral probes, cross-check con Figma, pattern compliance y generación de E2E spec. <code>/audit-module companies --workflow</code> lanza la variante fan-out con ~30 agentes en paralelo (probes P1–P6 + smoke-browser + síntesis). Sin argumentos (<code>/audit-module</code> o "revisa cambios") hace code review del diff actual (<code>git diff &lt;base&gt;..HEAD</code>).</li><li><strong><code>/sync-models</code></strong> — compara los modelos TypeScript del frontend (<code>*.model.ts</code>, enums, tipos Search/Filter) contra los DTOs Java del repo de commons configurado en <code>&lt;BACKEND_REPO_PATH&gt;</code>, usando <code>npm run check</code> como punto de partida; propone una tabla de cambios y espera confirmación antes de editar nada.</li><li><strong><code>/hu-refinement HU-3055 HU-3153</code></strong> — refinamiento de sprint: lee las HUs de la wiki, inspecciona el módulo existente y devuelve una tabla de estimación por tasks (máx. 5 por HU) para planificación.</li><li><strong>MCP servers</strong>: no se invocan directamente, los usan las skills anteriores. <code>mcp__angular-cli__search_documentation</code> / <code>find_examples</code> para consultar docs/API de Angular; <code>mcp__primeng__get_component</code> / <code>get_component_props</code> / <code>list_examples</code> / <code>get_example</code> para info y ejemplos de componentes PrimeNG. Ver bloque <code>{{STACK_TOOL_PRIORITY}}</code> más abajo para la política exacta de cuándo usarlas.</li></ul>
+<h3 id="dev-agent-system-angular-configuracion-que-el-init-debe-aplicar">Configuración que el init debe aplicar</h3>
+<p><code>rules.alwaysOn</code>: angular-core-architecture, code-generation, code-quality-guardrails, project-ui-components, self-learning-error-prevention. <code>rules.onDemand</code>: angular-form-responsibility-separation, i18n-structure, ngrx-entity-store, permissions.</p>
+<p><code>hooks.postEdit</code> recomendado: <code>"format": "./node_modules/.bin/oxfmt {file}"</code>, <code>"lint": "./node_modules/.bin/oxlint {file}"</code>, include <code>\.(ts|html)$</code>, exclude <code>\.(spec|mock)\.</code>.</p>
+<h4 id="dev-agent-system-angular-bloque-stack-tool-priority-para-claude-md">Bloque {{STACK_TOOL_PRIORITY}} para CLAUDE.md</h4>
+<pre><code>T: Angular docs/API/examples needed → A: mcp__angular-cli__search_documentation | mcp__angular-cli__find_examples | !Read local files
+T: PrimeNG component info needed → A: mcp__primeng__get_component | mcp__primeng__get_component_props | mcp__primeng__generate_component_template | !Read local files
+T: PrimeNG section/example needed → A: mcp__primeng__list_examples(component) first → then mcp__primeng__get_example(component, section, variant)</code></pre>
+<h4 id="dev-agent-system-angular-bloque-stack-section-para-claude-md">Bloque {{STACK_SECTION}} para CLAUDE.md</h4>
+<pre><code>## Stack: Angular (preset agent-system-angular)
+
+Skills de stack: feature-scaffolding (nueva feature CRUD desde spec JSON) | audit-module (auditoría HU + probes + Figma) | sync-models (modelos TS vs swagger) | hu-refinement (refinamiento de historias de usuario) | wiki-optimizer (mejora continua de la dev-guide de la wiki — contiene supuestos del proyecto original, revisar antes de reutilizar).
+T: /review / "revisa cambios" / "review branch" → A: @skill:audit-module | Bash(git diff &lt;base&gt;..HEAD --name-only) first | !subagent</code></pre>
+<h3 id="dev-agent-system-angular-configuracion-antes-del-primer-uso-backend-commons">Configuración antes del primer uso (backend commons)</h3>
+<p><code>sync-models</code> y el paso 7.5 (backend-crosscheck) de <code>audit-module</code> asumen un repo Java de "commons" hermano al frontend, como fuente de verdad de los DTOs. Estas rutas están <strong>parametrizadas</strong> con el placeholder <code>&lt;BACKEND_REPO_PATH&gt;</code> — la primera vez que uses cualquiera de estos dos skills en un proyecto nuevo:</p>
+<ol><li>Clona (o localiza) el repo de commons del proyecto junto al frontend.</li><li>Anota su ruta real en <code>.claude/agent-system.config.json</code> (o dile a Claude la ruta la primera vez que invoques <code>/sync-models</code>; puede guardarla en <code>canonicalExamples</code> para no repetirla).</li><li>Del mismo modo, <code>backendBaseUrl</code> en las specs de <code>feature-scaffolding</code> usa <code>${environment.apiGw.&lt;API_GW_KEY&gt;.url}</code> como plantilla — sustituye <code>&lt;API_GW_KEY&gt;</code> por la clave real de <code>environment.apiGw.*</code> de tu proyecto (revisa <code>src/environments/environments.ts</code>).</li></ol>
+<p>Si tu proyecto no tiene un repo de commons Java separado, <code>sync-models</code> y el paso 7.5 de <code>audit-module</code> no aplican: puedes ignorarlos o quitar la regla <code>self-learning-error-prevention</code> asociada.</p>
+<h3 id="dev-agent-system-angular-notas">Notas</h3>
+<ul><li><code>project-ui-components.md</code> y varios LE del proyecto original referencian componentes <code>@shared/ui</code> propios (<code>app-custom-table</code>, <code>app-input-text</code>…). Son la base de partida: <strong>cada proyecto debe adaptarlos</strong> a su design system tras el init.</li><li><code>.mcp.json</code> usa los paquetes oficiales: <code>@angular/cli mcp</code> y <code>@primeng/mcp</code> (PrimeFaces). Nota: el MCP de PrimeNG expone muchas tools; si tu cliente avisa de límite de tools, desactiva las que no uses.</li><li>Las reglas copiadas son del proyecto: evolucionan con él vía el loop G:EVOLVE. Las mejoras generalizables se suben como PR a este preset.</li></ul>
+        </div>
+      </article>
+
+      <article class="plugin" id="dev-agent-system-core" data-category="dev">
+        <header class="plugin-header">
+          <h2>dev-agent-system-core <span class="badge">v1.0.0</span></h2>
+          <p class="plugin-desc">Motor de sistema de agentes multi-rol con auto-aprendizaje: 7 agentes (architect, dev, tester, reviewer, debugger, evolver, wiki-saver), hooks de lint automatico, contexto y auto-evolucion al cerrar sesion, skills genericas (spec-driven-dev, debug-hypothesis, refactor, typescript-best-practices, playwright-best-practices) y sistema de wiki/knowledge-log por proyecto. Ejecuta /agent-system-core:init en cada proyecto nuevo.</p>
+          <div class="keywords"><span class="kw">agents</span><span class="kw">self-learning</span><span class="kw">workflow</span><span class="kw">wiki</span></div>
+        </header>
+        <div class="plugin-body">
+          <p>Motor genérico de un sistema de agentes multi-rol con auto-aprendizaje para Claude Code: 7 agentes especializados (architect, dev, tester, reviewer, debugger, evolver, wiki-saver), hooks de lint automático y auto-evolución al cerrar sesión, skills genéricas de desarrollo, y un sistema de wiki/knowledge-log persistente por proyecto. Es agnóstico de stack — toda la configuración específica del proyecto vive en <code>.claude/agent-system.config.json</code>, generado por <code>/agent-system-core:init</code>.</p>
+<h3 id="dev-agent-system-core-que-incluye">Qué incluye</h3>
+<h4 id="dev-agent-system-core-agentes-agents">Agentes (<code>agents/</code>)</h4>
+<div class="table-wrap"><table><thead><tr><th>Agente</th><th>Rol</th><th>Herramientas</th><th>Puede editar código</th></tr></thead><tbody><tr><td><strong>architect</strong></td><td>Analista técnico y arquitecto. Planifica historias de usuario y estructura de componentes/módulos antes de escribir código. Usa la skill <code>spec-driven-dev</code>.</td><td>Read, Write, Glob, Grep</td><td>No — solo diseño y documentos de plan</td></tr><tr><td><strong>dev</strong></td><td>Desarrollador principal. Implementa componentes, servicios y lógica siguiendo las convenciones del proyecto (rules + config). Usa <code>typescript-best-practices</code>.</td><td>Read, Write, Edit, Bash, Glob, Grep</td><td>Sí</td></tr><tr><td><strong>tester</strong></td><td>Especialista en testing automatizado. Escribe specs exhaustivas, mocks y casos límite; ejecuta el runner configurado en <code>config.commands.test</code>.</td><td>Read, Write, Edit, Bash, Glob, Grep</td><td>Solo si es estrictamente necesario para testabilidad</td></tr><tr><td><strong>reviewer</strong></td><td>QA/revisor de código. Audita cambios recientes (<code>git diff</code>) buscando malas prácticas, deuda y fallos de rendimiento. Usa <code>refactor</code> y <code>typescript-best-practices</code>.</td><td>Read, Glob, Grep</td><td>No — solo análisis y feedback</td></tr><tr><td><strong>debugger</strong></td><td>Especialista en resolución de problemas. Aplica método científico (Observar → Hipotetizar → Experimentar → Concluir) para bugs complejos. Usa <code>debug-hypothesis</code>.</td><td>Read, Write, Edit, Bash, Glob, Grep</td><td>Sí</td></tr><tr><td><strong>evolver</strong></td><td>Meta-evolver. Audita una sesión multi-agente completa (flujo, malgasto de tokens, mal uso de tools/skills) y emite un informe con diffs propuestos — nunca los aplica solo. Usa <code>agent-evolution</code>.</td><td>Read, Glob, Grep, Bash, Write</td><td>No — solo propone, requiere confirmación humana</td></tr><tr><td><strong>wiki-saver</strong></td><td>Archivista técnico. Compila la conversación actual en una página wiki permanente (<code>docs/wiki/outputs/&lt;slug&gt;.md</code>) con frontmatter y hace commit. Se invoca con <code>/agent-system-core:save &lt;slug&gt;</code>.</td><td>Read, Write, Bash</td><td>Solo en la wiki, no en código fuente</td></tr></tbody></table></div>
+<p>Todos los agentes leen primero <code>.claude/agent-system.config.json</code> y las reglas <code>alwaysOn</code> del proyecto antes de actuar (contexto obligatorio).</p>
+<h4 id="dev-agent-system-core-comandos-commands">Comandos (<code>commands/</code>)</h4>
+<div class="table-wrap"><table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>/agent-system-core:init [--force]</code></td><td><strong>Instalador.</strong> Detecta el stack del proyecto, hace preguntas mínimas, genera <code>.claude/agent-system.config.json</code>, copia reglas y seeds de wiki, opcionalmente instala el preset de stack correspondiente, genera <code>CLAUDE.md</code>, propone permisos en <code>settings.json</code> y verifica que todo quedó consistente. Se ejecuta una vez por proyecto.</td></tr><tr><td><code>/agent-system-core:save &lt;slug&gt;</code></td><td>Lanza al agente <code>wiki-saver</code> con el contexto de la conversación actual para archivarla en <code>docs/wiki/outputs/&lt;slug&gt;.md</code> + commit.</td></tr><tr><td><code>/agent-system-core:autoresearch &lt;query&gt;</code></td><td>Investiga huecos de conocimiento en la wiki del proyecto relacionados con la query y expande las páginas correspondientes (presupuesto limitado); marca contradicciones entre fuentes con un callout.</td></tr><tr><td><code>/agent-system-core:wiki-lint</code></td><td>Linta la wiki del proyecto: frontmatter inválido, enlaces rotos, páginas huérfanas. Ofrece corregir tras reportar.</td></tr></tbody></table></div>
+<h4 id="dev-agent-system-core-hooks-hooks-hooks-json">Hooks (<code>hooks/hooks.json</code>)</h4>
+<div class="table-wrap"><table><thead><tr><th>Hook</th><th>Se dispara en</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>start-context-load.sh</code></td><td><code>UserPromptSubmit</code> (cada prompt)</td><td>Si hay ficheros pendientes en el inbox de la wiki (<code>paths.inbox</code>), avisa en el propio prompt. Silencioso si el proyecto no está inicializado.</td></tr><tr><td><code>post-edit-lint.sh</code></td><td><code>PostToolUse</code> tras `Write\</td><td>Edit\</td><td>MultiEdit`</td><td>Formatea y linta automáticamente cada fichero tocado, usando los comandos de <code>config.hooks.postEdit</code> o autodetectando <code>oxfmt/prettier</code> + <code>oxlint/eslint/ruff</code>. Las violaciones se imprimen a stdout para que Claude las corrija en el mismo turno. Nunca bloquea (<code>exit 0</code> siempre).</td></tr><tr><td><code>stop-self-evolve.sh</code></td><td><code>Stop</code> (al cerrar la sesión/turno)</td><td>Analiza el transcript de la sesión buscando señales de auto-aprendizaje (ficheros editados + palabras clave de bug). Si detecta señales y no se ha auditado ya esta sesión, bloquea el cierre (<code>decision: block</code>) con una directiva de auditoría <code>G:EVOLVE</code> que obliga a revisar y, si procede, registrar un error aprendido (<code>LE-...</code>) en el knowledge-log antes de continuar.</td></tr></tbody></table></div>
+<h4 id="dev-agent-system-core-skills-genericas-skills">Skills genéricas (<code>skills/</code>)</h4>
+<ul><li><strong>spec-driven-dev</strong> — ciclo obligatorio Spec → Plan → Build → Test → Review → Ship con puertas de aprobación humana; se usa para cualquier feature/refactor no trivial que toque más de un fichero.</li><li><strong>debug-hypothesis</strong> — fuerza el método científico (Observar→Hipotetizar→Experimentar→Concluir) al depurar bugs no obvios, en vez de "probar cosas" a ciegas.</li><li><strong>refactor</strong> — flujo de refactor multi-fichero: mapear el radio de impacto, proponer enfoque, confirmar, implementar en lotes verificando build tras cada uno.</li><li><strong>typescript-best-practices</strong> — guía extensa de tipado, manejo de errores, patrones de arquitectura y organización de código TypeScript (incluye scripts de análisis/scaffolding y presets de <code>tsconfig</code>).</li><li><strong>playwright-best-practices</strong> — referencia muy amplia (30+ documentos) de testing E2E/componentes/API con Playwright: locators, fixtures, CI/CD, mocking, accesibilidad, flaky tests, frameworks (Angular/React/Vue/Next), etc.</li></ul>
+<p>Además, el plugin trae skills de soporte interno que usan los propios agentes/comandos (no pensadas para invocación manual directa, salvo la última):</p>
+<ul><li><strong>agent-evolution</strong> — usada por el agente <code>evolver</code> para auditar una sesión multi-agente contra un catálogo de antipatrones.</li><li><strong>self-learning-error-prevention</strong> — implementa el loop SCAN→LEARN→PROMOTE→DECAY del knowledge-log (errores aprendidos <code>LE-...</code>); se activa al empezar tareas, tras arreglar bugs, y cuando el hook <code>Stop</code> exige auditoría.</li><li><strong>save</strong> — la que ejecuta realmente <code>/agent-system-core:save</code>, lanzando al agente <code>wiki-saver</code>.</li><li><strong>documentation-writer</strong> — experto en documentación técnica siguiendo el framework Diátaxis; disponible para redactar documentación de calidad cuando se necesite.</li></ul>
+<h4 id="dev-agent-system-core-templates-templates">Templates (<code>templates/</code>)</h4>
+<p>Plantillas que <code>/agent-system-core:init</code> copia al proyecto: <code>_shorthand.md</code>, <code>agent-system.config.json</code>, <code>CLAUDE.md.template</code>, reglas (<code>rules/code-generation.md</code>, <code>rules/code-quality-guardrails.md</code>, <code>rules/self-learning-error-prevention.md</code>), seeds de wiki (<code>docs/wiki/index.md</code>, <code>log.md</code>, <code>knowledge-log.md</code>), <code>settings-suggested.json</code> (permisos propuestos), y scripts opcionales de wiki (<code>scripts/wiki/*</code> — ingest, lint, search, autoresearch, sync).</p>
+<h3 id="dev-agent-system-core-concepto-de-preset-de-stack">Concepto de "preset de stack"</h3>
+<p><code>dev-agent-system-core</code> es el <strong>motor genérico</strong>: agentes, hooks, comandos y skills que funcionan en cualquier proyecto, sin saber nada de un framework concreto. No incluye reglas de arquitectura de Angular, .NET o Java.</p>
+<p>Los plugins hermanos son <strong>presets de stack</strong> que se instalan *encima* de este motor y aportan lo específico de una tecnología:</p>
+<ul><li><code>dev-agent-system-angular</code> — reglas de arquitectura Angular 20+/PrimeNG/Tailwind/NgRx Signal Store, feature-scaffolding, audit-module, sync-models, MCP servers (angular-cli, primeng).</li><li><code>dev-agent-system-dotnet</code> — reglas de capas/módulos, EF Core, JWT/Keycloak, manejo de errores; skills de scaffolding/auditoría/migraciones/pre-commit.</li><li><code>dev-agent-system-java</code> — arquitectura de dos paquetes (librería compartida + proyecto), seguridad Keycloak/OAuth2 multi-tenant, persistencia JPA/Specification, skills de scaffolding/auditoría/tests-gated-por-spec.</li></ul>
+<p>Los tres declaran explícitamente <code>Requiere dev-agent-system-core</code> en su descripción del marketplace, y todos exigen sustituir placeholders propios del proyecto antes del primer uso (ver el README de cada preset).</p>
+<p>El punto de conexión entre ambos es la <strong>Fase 5 de <code>/agent-system-core:init</code></strong>: si detecta (o el usuario confirma) que hay un preset instalado, <code>init</code> copia las <code>rules/</code> y <code>rules-on-demand/</code> de ese preset al proyecto como base editable, añade sus scripts si se desea, y las registra en <code>agent-system.config.json</code> (<code>rules.alwaysOn</code>/<code>rules.onDemand</code>) y en los placeholders <code>{{STACK_TOOL_PRIORITY}}</code>/<code>{{STACK_SECTION}}</code> del <code>CLAUDE.md</code> generado.</p>
+<h3 id="dev-agent-system-core-como-instalarlo">Cómo instalarlo</h3>
+<p>Instala el plugin <code>dev-agent-system-core</code> desde el marketplace <code>attrim-marketplace</code> con el flujo habitual de plugins de Claude Code (marketplace ya añadido → <code>/plugin install dev-agent-system-core@attrim-marketplace</code> o equivalente desde el gestor de plugins). Si el proyecto usa Angular, .NET o Java, conviene instalar también el preset de stack correspondiente (<code>dev-agent-system-angular</code>, <code>dev-agent-system-dotnet</code> o <code>dev-agent-system-java</code>) <strong>antes o justo después</strong> de ejecutar <code>/agent-system-core:init</code>, para que la Fase 5 del instalador lo detecte y lo aplique automáticamente.</p>
+<h3 id="dev-agent-system-core-como-usarlo">Cómo usarlo</h3>
+<h4 id="dev-agent-system-core-1-inicializar-un-proyecto-nuevo">1. Inicializar un proyecto nuevo</h4>
+<pre><code>/agent-system-core:init</code></pre>
+<p>Detecta el stack (package.json, angular.json, linters, test runner…), hace un máximo de 2 tandas de preguntas sobre lo que no pudo inferir (comandos de build/lint/test, rama base, carpetas canónicas, iniciales para IDs de errores aprendidos, y si aplicar un preset instalado), y deja el proyecto operativo: <code>.claude/agent-system.config.json</code>, <code>CLAUDE.md</code>, reglas en <code>.claude/rules/</code>, seeds de wiki en <code>docs/wiki/</code>, y una propuesta de <code>settings.json</code> (que siempre se muestra como diff antes de escribir). Nunca sobrescribe wiki/knowledge-log/agent-memory existentes sin confirmación.</p>
+<h4 id="dev-agent-system-core-2-invocar-a-un-agente-concreto">2. Invocar a un agente concreto</h4>
+<p>Por ejemplo, pedir al <strong>architect</strong> que planifique una feature antes de tocar código:</p>
+<p>&gt; "Actúa como el agente architect y planifica cómo estructurar un módulo de facturación con listado, alta y edición, reutilizando los componentes canónicos del proyecto."</p>
+<p>El architect lee primero <code>agent-system.config.json</code> y las reglas <code>alwaysOn</code>, propone estructura de carpetas/ficheros, modelos de datos y patrón de estado — pero no escribe código funcional (eso lo hace después el agente <code>dev</code>).</p>
+<p>O pedir al <strong>reviewer</strong> que audite lo último hecho:</p>
+<p>&gt; "Que el agente reviewer revise los cambios del último commit contra las convenciones del proyecto y me dé feedback."</p>
+<p>El reviewer analiza el <code>git diff</code> reciente, marca los patrones repetidos como el problema principal (no el más fácil de arreglar primero), y responde en Markdown con fichero/línea/motivo/sugerencia — sin editar nada él mismo.</p>
+<h4 id="dev-agent-system-core-3-cerrar-la-sesion-auto-evolucion-y-wiki">3. Cerrar la sesión (auto-evolución y wiki)</h4>
+<p>Al terminar una sesión de trabajo donde se editaron ficheros y aparecieron señales de bug, el hook <code>Stop</code> (<code>stop-self-evolve.sh</code>) detecta esas señales en el transcript y bloquea el cierre con una directiva <code>G:EVOLVE AUDIT REQUIRED</code>: obliga a revisar si hubo un error no trivial resuelto y, si es generalizable, proponer una entrada nueva en el knowledge-log (<code>LE-&lt;INICIALES&gt;-NNN</code>) antes de continuar. Independientemente de eso, si la conversación produjo conocimiento valioso, se puede archivar explícitamente con:</p>
+<pre><code>/agent-system-core:save nombre-de-la-decision</code></pre>
+<p>que lanza al agente <code>wiki-saver</code>, el cual escribe <code>docs/wiki/outputs/nombre-de-la-decision.md</code> con frontmatter completo (tipo, confianza, tags, fuentes) y hace <code>git commit</code> (o avisa si el commit está denegado en <code>settings.json</code>).</p>
+<h3 id="dev-agent-system-core-requisitos-configuracion-previa">Requisitos / configuración previa</h3>
+<ul><li>El proyecto debe tener <code>.git/</code> (o confirmarse como raíz) para que <code>/agent-system-core:init</code> pueda funcionar con normalidad (diffs, <code>canonicalExamples</code>, etc.).</li><li>El flujo de orquestación multi-agente (architect → dev → tester → reviewer) depende de que <code>settings.json</code> tenga <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: true</code> — <code>init</code> lo propone en la Fase 7, salvo que la versión de Claude Code ya soporte agent teams de forma nativa.</li><li>Los hooks de lint/format esperan <code>oxfmt</code>/<code>prettier</code> y <code>oxlint</code>/<code>eslint</code>/<code>ruff</code> en <code>node_modules/.bin/</code> o en el PATH (autodetección); si el proyecto usa otra herramienta, hay que configurar <code>hooks.postEdit.format</code>/<code>lint</code> explícitamente en <code>agent-system.config.json</code>.</li><li>Los hooks son scripts Bash (compatibles con Git Bash en Windows, según comentario en <code>stop-self-evolve.sh</code>) y dependen de <code>node</code> disponible en el PATH para parsear JSON.</li><li>Sin <code>.claude/agent-system.config.json</code> (es decir, sin haber corrido <code>/agent-system-core:init</code> en ese proyecto), los tres hooks y la mayoría de agentes salen en silencio o degradan su comportamiento — el plugin no rompe proyectos no inicializados, pero tampoco aporta valor hasta que se inicializan.</li></ul>
+<h3 id="dev-agent-system-core-notas-relevantes">Notas relevantes</h3>
+<ul><li>Los agentes <code>architect</code> y <code>reviewer</code> tienen prohibido explícitamente escribir/editar código (<code>!!writes_functional_code</code> / <code>!!direct_code_edit</code>) — son puramente de planificación y auditoría; solo <code>dev</code> y <code>debugger</code> tienen <code>Edit</code>/<code>Bash</code> para modificar el proyecto.</li><li>El agente <code>evolver</code> tiene una guardarraíl de auto-protección: nunca se analiza ni se edita a sí mismo ni a su propia skill (<code>agent-evolution</code>), y cualquier propuesta suya sobre el propio motor del plugin (agentes/hooks/skills de <code>dev-agent-system-core</code>) se marca como "PROPUESTA UPSTREAM: PR al repo del plugin", no como un diff local a aplicar.</li><li>El hook <code>post-edit-lint.sh</code> nunca bloquea (<code>exit 0</code> siempre) — solo imprime violaciones para que se corrijan en el mismo turno, no interrumpe el flujo del agente.</li><li>El hook <code>stop-self-evolve.sh</code> sí puede bloquear el cierre de turno (<code>decision: block</code>) cuando detecta señales de auto-aprendizaje sin auditar; se desbloquea escribiendo <code>.claude/state/audit-&lt;session_id&gt;.done</code> tras completar la auditoría descrita en la skill <code>self-learning-error-prevention</code>.</li><li>Aunque la descripción del marketplace lista 5 skills "genéricas", el plugin trae 4 skills adicionales de soporte interno (<code>agent-evolution</code>, <code>self-learning-error-prevention</code>, <code>save</code>, <code>documentation-writer</code>) que sostienen el ciclo de auto-aprendizaje y los comandos — no son casuales, forman parte del mecanismo, aunque no se invocan manualmente salvo <code>documentation-writer</code>.</li></ul>
+        </div>
+      </article>
+
+      <article class="plugin" id="dev-agent-system-dotnet" data-category="dev">
+        <header class="plugin-header">
+          <h2>dev-agent-system-dotnet <span class="badge">v1.0.0</span></h2>
+          <p class="plugin-desc">Preset .NET / ASP.NET Core para dev-agent-system-core: reglas de arquitectura (capas+módulos, EF Core, JWT/Keycloak, manejo de errores), skills de scaffolding/auditoría/migraciones/pre-commit, y errores aprendidos semilla. Requiere dev-agent-system-core. Antes del primer uso hay que sustituir los placeholders de proyecto (namespace raíz, proyectos, providers externos, esquemas JWT, puertos) — ver README.</p>
+          <div class="keywords"><span class="kw">dotnet</span><span class="kw">aspnetcore</span><span class="kw">efcore</span><span class="kw">csharp</span></div>
+        </header>
+        <div class="plugin-body">
+          <p>Preset de stack para <code>dev-agent-system-core</code>. No hace nada por sí solo: <code>/agent-system-core:init</code> detecta este plugin y copia su contenido al proyecto como base editable.</p>
+<h3 id="dev-agent-system-dotnet-que-aporta">Qué aporta</h3>
+<div class="table-wrap"><table><thead><tr><th>Contenido</th><th>Destino en el proyecto</th><th>Rol</th></tr></thead><tbody><tr><td><code>templates/rules/*.md</code></td><td><code>.claude/rules/</code></td><td>Reglas always-on: arquitectura de capas+módulos, manejo de errores, validación, seguridad JWT/Keycloak, persistencia EF Core, naming/estilo, guardarraíles de calidad</td></tr><tr><td><code>templates/rules-on-demand/*.md</code></td><td><code>.claude/rules-on-demand/</code></td><td>Reglas bajo demanda: dual-port-auth, provider-sync, mock-mode, request-logging, provider-retry</td></tr><tr><td><code>templates/project/knowledge-log-seed.md</code></td><td>copiar manualmente a <code>docs/wiki/knowledge-log.md</code> (o ingerir vía wiki)</td><td>7 errores aprendidos semilla, ya generalizados</td></tr><tr><td><code>skills/</code></td><td>(viven en el plugin)</td><td>feature-scaffolding, add-endpoint, module-audit, create-migration, pre-commit-validate, pr-description, commit-message, run-tests-here, env-check, hu-refinement</td></tr></tbody></table></div>
+<p>No hay <code>.mcp.json</code> ni <code>templates/scripts/</code> — el proyecto de referencia no tenía scripts propios ni MCP servers maduros para este stack (ver "Propuestas no implementadas" más abajo).</p>
+<h3 id="dev-agent-system-dotnet-como-usarlo">Cómo usarlo</h3>
+<p>Una vez instalado (tras <code>/agent-system-core:init</code> y sustituir los placeholders), las skills se invocan como comandos dentro de una sesión de Claude Code. Ejemplos reales de flujo completo:</p>
+<ul><li><strong>Crear un módulo nuevo de punta a punta</strong> (<code>feature-scaffolding</code> → <code>create-migration</code> → <code>pre-commit-validate</code>):</li></ul>
+<pre><code>  /new-module Invoice "number:string amount:decimal issuedAt:DateTime" --public --sync-a
+  /create-migration AddInvoice
+  /validate</code></pre>
+<p>  El primer comando genera entity, DTOs, service+mock, controller(s) y registros DI del módulo <code>Invoice</code> (con controller público además del interno, y sincronización con el provider A); el segundo genera la migración EF Core correspondiente (con el guardarraíl de detección de cambios destructivos); el tercero da el veredicto <code>READY TO COMMIT | BLOCKED</code> antes de cerrar la tarea.</p>
+<ul><li><strong>Añadir un endpoint a un recurso ya existente</strong>:</li></ul>
+<pre><code>  /add-endpoint InvoiceController "marcar una factura como pagada"</code></pre>
+<p>  Añade el método al servicio (con mock guard y XML docs), el endpoint al controller con la paridad Public/Internal que corresponda, y los tests happy-path/mock-path/not-found.</p>
+<ul><li><strong>Auditar consistencia antes de una PR grande</strong>:</li></ul>
+<pre><code>  /sync-check Invoice</code></pre>
+<p>  o sin argumento (<code>/sync-check</code>) para auditar todo el backend: revisa paridad Public/Internal, completitud de provider-sync, DI sin duplicados, tests y mock guards, y reporta findings <code>[ERROR]/[WARNING]/[OK]</code> por fichero:línea sin modificar nada.</p>
+<ul><li><strong>Generar una migración suelta tras cambiar una entidad a mano</strong>:</li></ul>
+<pre><code>  /migrate RenameInvoiceStatus</code></pre>
+<h3 id="dev-agent-system-dotnet-configuracion-antes-del-primer-uso-obligatorio">Configuración antes del primer uso (obligatorio)</h3>
+<p>Este preset viene de un proyecto ASP.NET Core real, con lo específico de ese proyecto <strong>ya parametrizado por quien lo aportó</strong> con los siguientes placeholders. Sustitúyelos por los valores reales de tu proyecto en cuanto instales el preset (recomendado: anotarlos en <code>.claude/agent-system.config.json</code>, sección <code>canonicalExamples</code> o una entrada propia, para no repetirlos cada sesión):</p>
+<div class="table-wrap"><table><thead><tr><th>Placeholder</th><th>Qué es</th><th>Dónde aparece</th></tr></thead><tbody><tr><td><code>&lt;ROOT_NS&gt;</code></td><td>Raíz de namespace del proyecto (ej. <code>Company.Product</code>)</td><td><code>dotnet-core-architecture.md</code></td></tr><tr><td><code>&lt;API_PROJ&gt;</code></td><td>Proyecto host (API)</td><td><code>dotnet-core-architecture.md</code>, <code>create-migration</code></td></tr><tr><td><code>&lt;CORE_PROJ&gt;</code> / <code>&lt;INFRA_PROJ&gt;</code></td><td>Proyectos de capa Core / Infrastructure</td><td><code>dotnet-core-architecture.md</code>, <code>dotnet-persistence.md</code>, <code>create-migration</code></td></tr><tr><td><code>&lt;PROVIDER_A&gt;</code> / <code>&lt;PROVIDER_B&gt;</code></td><td>Sistemas externos con los que se sincroniza (si los hay)</td><td><code>provider-sync.md</code></td></tr><tr><td><code>&lt;PUBLIC_AZP&gt;</code> / <code>&lt;INTERNAL_AZP&gt;</code></td><td>Valores esperados del claim <code>azp</code> por esquema JWT</td><td><code>dotnet-security.md</code>, <code>dual-port-auth.md</code></td></tr><tr><td><code>&lt;INTERNAL_ROLE&gt;</code></td><td>Rol requerido en el token del esquema interno</td><td><code>dotnet-security.md</code>, <code>dual-port-auth.md</code></td></tr><tr><td><code>&lt;PORT_PUBLIC&gt;</code> / <code>&lt;PORT_INTERNAL&gt;</code></td><td>Puertos de escucha (si el proyecto separa tráfico público/interno)</td><td><code>dual-port-auth.md</code></td></tr><tr><td><code>&lt;COPYRIGHT_HOLDER&gt;</code></td><td>Titular de la cabecera de copyright</td><td><code>dotnet-naming-style.md</code></td></tr></tbody></table></div>
+<p>Si tu proyecto <strong>no</strong> tiene alguno de estos patrones (p. ej. no separa tráfico por puertos, o no sincroniza con sistemas externos), simplemente ignora o elimina la regla <code>rules-on-demand</code> correspondiente (<code>dual-port-auth</code>, <code>provider-sync</code>, <code>provider-retry</code>) — no fuerces el patrón donde no aplica.</p>
+<h3 id="dev-agent-system-dotnet-configuracion-que-el-init-debe-aplicar">Configuración que el init debe aplicar</h3>
+<p><code>rules.alwaysOn</code>: dotnet-core-architecture, dotnet-error-handling, dotnet-validation, dotnet-security, dotnet-persistence, dotnet-naming-style, code-quality-guardrails. <code>rules.onDemand</code>: dual-port-auth, provider-sync, mock-mode, request-logging, provider-retry (según apliquen al proyecto).</p>
+<p>Comandos de proyecto observados en el origen (confirmar contra el proyecto real):</p>
+<ul><li>Build: <code>dotnet build</code> · Test: <code>dotnet test</code> (una clase: <code>dotnet test --filter "ClassName={Clase}Tests"</code>) · Restore: <code>dotnet restore</code>.</li><li><strong>No hay <code>dotnet format</code> configurado</strong> en el proyecto de referencia — la calidad se controlaba con SonarQube en CI. No asumas un comando de lint/format local que no exista; confírmalo con el equipo antes de rellenar <code>hooks.postEdit</code>.</li><li>Migraciones: <strong>no</strong> hay <code>dotnet ef database update</code> manual — se aplican solas al arrancar (<code>MigrateAsync</code>). Ver guardarraíl crítico en <code>dotnet-persistence.md</code> y en <code>@skill:create-migration</code>.</li></ul>
+<h3 id="dev-agent-system-dotnet-errores-aprendidos-semilla">Errores aprendidos semilla</h3>
+<p><code>templates/project/knowledge-log-seed.md</code> trae 7 casos reales ya generalizados (formato Fingerprint/Root cause/Regla) para sembrar el knowledge-log del proyecto vía el skill <code>self-learning-error-prevention</code> de <code>dev-agent-system-core</code>. Son punto de partida, no entradas definitivas — conviértelas al formato canónico <code>LE-{INICIALES}-{NNN}</code> del proyecto real al incorporarlas.</p>
+<h3 id="dev-agent-system-dotnet-propuestas-no-implementadas-5-6-del-spec-original">Propuestas no implementadas (§5/§6 del spec original)</h3>
+<p>El material de origen documentaba dos ideas que <strong>no llegaron a implementarse como código</strong>, y este preset no las inventa:</p>
+<ul><li><strong><code>swagger-contract-diff</code></strong> — un script que compare el OpenAPI generado contra el último publicado y marque cambios de DTO como *breaking* (análogo al <code>check-models-from-swagger.ts</code> del preset Angular, pero mirado desde el backend). Tendría sentido si tu proyecto expone OpenAPI/Swagger como contrato.</li><li><strong>MCP servers</strong>: no había ninguno maduro identificado para EF Core, NuGet o Azure DevOps en el momento de curar este preset. Si conoces uno oficial, añádelo a un <code>.mcp.json</code> propio del plugin.</li></ul>
+<p>Si tu equipo quiere desarrollar cualquiera de las dos, es un plugin/mejora nueva sobre este preset, no algo que instalar hoy.</p>
+<h3 id="dev-agent-system-dotnet-notas">Notas</h3>
+<ul><li>Las reglas y skills copiados son de un proyecto real: <strong>cada proyecto debe adaptarlos</strong> a su realidad tras el init (nombres de esquema, providers, si aplica dual-port, etc.).</li><li>Varios guardarraíles de este preset (400 vs 404, <code>Guid.Parse</code> sobre IDs externos, mock guard fuera de sitio, DI duplicado, orden de lectura del body en logging) provienen de bugs reales detectados en producción — no son teoría, son la razón de ser del preset.</li><li>Las mejoras generalizables se suben como PR a este preset.</li></ul>
+        </div>
+      </article>
+
+      <article class="plugin" id="dev-agent-system-java" data-category="dev">
+        <header class="plugin-header">
+          <h2>dev-agent-system-java <span class="badge">v1.0.0</span></h2>
+          <p class="plugin-desc">Preset Java / Spring Boot para dev-agent-system-core: arquitectura de dos paquetes (librería compartida + proyecto), manejo de errores con jerarquía + i18n, seguridad (Keycloak/OAuth2, multi-tenancy, filtrado por usuario), persistencia JPA/Specification, skills de scaffolding/auditoría/tests-gated-por-spec, y errores aprendidos semilla. Requiere dev-agent-system-core. Antes del primer uso hay que sustituir los placeholders de proyecto (paquetes, ruta del repo de commons, tracker de trabajo) — ver README.</p>
+          <div class="keywords"><span class="kw">java</span><span class="kw">spring-boot</span><span class="kw">jpa</span><span class="kw">hibernate</span></div>
+        </header>
+        <div class="plugin-body">
+          <p>Preset de stack para <code>dev-agent-system-core</code>. No hace nada por sí solo: <code>/agent-system-core:init</code> detecta este plugin y copia su contenido al proyecto como base editable.</p>
+<h3 id="dev-agent-system-java-que-aporta">Qué aporta</h3>
+<div class="table-wrap"><table><thead><tr><th>Contenido</th><th>Destino en el proyecto</th><th>Rol</th></tr></thead><tbody><tr><td><code>templates/rules/*.md</code></td><td><code>.claude/rules/</code></td><td>Reglas always-on: arquitectura de dos paquetes, manejo de errores, validación, seguridad, persistencia JPA, naming/estilo, guardarraíles de calidad</td></tr><tr><td><code>templates/rules-on-demand/*.md</code></td><td><code>.claude/rules-on-demand/</code></td><td>Reglas bajo demanda: filter-and-export-specification, entity-audit, exceptions-i18n, legacy-static-analysis-catalog, test-data-index, default-filters-frontend-responsibility</td></tr><tr><td><code>templates/project/knowledge-log-seed.md</code></td><td>copiar manualmente a <code>docs/wiki/knowledge-log.md</code> (o ingerir vía wiki)</td><td>4 errores aprendidos semilla, ya generalizados</td></tr><tr><td><code>templates/scripts/azure/*.mjs</code></td><td><code>scripts/azure/</code> (opcional)</td><td>Sincronización de HUs de Azure Boards a wiki local + publicación de comentarios técnicos, ambos con variables de entorno obligatorias, sin fallback hardcodeado</td></tr><tr><td><code>skills/</code></td><td>(viven en el plugin)</td><td>crud-scaffolding, module-audit-and-review, exception-and-i18n-authoring, filter-and-search-scaffolding, spec-gated-test-authoring</td></tr></tbody></table></div>
+<p>No hay <code>.mcp.json</code> — no se identificó ningún MCP server maduro específico de Java/Spring Boot en el material de origen (ver "Propuestas no implementadas").</p>
+<h3 id="dev-agent-system-java-como-usarlo">Cómo usarlo</h3>
+<p>Las skills de este preset se activan solas cuando la petición coincide con su <code>description</code> (no son comandos slash) — igual que cualquier skill de Claude Code. También puedes forzar una en concreto pidiéndola por nombre. Ejemplos reales, tras hacer <code>/agent-system-core:init</code> con este preset:</p>
+<ul><li><strong>Escafoldar el CRUD de una entidad:</strong> "Genera el CRUD completo de <code>Invoice</code>, con búsqueda paginada y export" activa <code>crud-scaffolding</code>. El skill decide qué capas hacen falta (service+impl, controller, repositorio, DTOs de filtro/proyección/completo, mapper, claves i18n), fija <code>tenantId</code> y fechas de sistema desde el contexto de seguridad (nunca desde el DTO entrante) y delega la construcción de filtros en <code>filter-and-search-scaffolding</code> para que <code>search</code> y <code>export</code> reutilicen exactamente la misma <code>Specification</code>.</li><li><strong>Añadir filtros/paginación o export a una entidad ya existente:</strong> "Añade búsqueda con filtros por fecha, estado y cliente a <code>Order</code>, y su export a CSV" activa <code>filter-and-search-scaffolding</code> directamente (sin pasar por el CRUD completo). Genera el DTO de filtro (campos <code>String</code> con prefijo de operador), el DTO de proyección compartido con export, la <code>Specification</code> con un método por campo, y la condición de seguridad tenant + filtro por usuario.</li><li><strong>Lanzar o registrar un error de negocio:</strong> "Si el cliente ya tiene una factura pendiente, lanza un 409" activa <code>exception-and-i18n-authoring</code>: elige (o crea) el tipo de excepción por status HTTP, añade la constante al catálogo centralizado (<code>ErrorResource</code>), lanza con el factory estándar <code>XxxException.generic(...)</code> y añade la clave de mensaje en TODOS los ficheros de idioma en la misma pasada — nunca interpola el id en el texto.</li><li><strong>Auditar un módulo antes de darlo por cerrado:</strong> "Audita el módulo de facturación contra la HU-1234" activa <code>module-audit-and-review</code> (flujo a: auditoría completa) — cruza cada criterio de la especificación con el código real, detecta métodos muertos y construye una matriz de cobertura de test. Pedir "revisa el diff de esta rama antes de fusionar" (sin identificador de HU) activa el flujo b: agrupa hallazgos por categoría y <strong>espera confirmación explícita</strong> antes de aplicar ninguna corrección.</li><li><strong>Escribir o revisar tests con la especificación como fuente de verdad:</strong> "Escribe los tests de <code>update</code> para <code>Order</code>, HU-1234" activa <code>spec-gated-test-authoring</code>. Si no encuentra la especificación funcional de esa operación concreta, el skill <strong>para</strong> y pide el identificador de la historia en vez de inventar criterios; si el test ya existe, reporta discrepancias contra spec/código/cambios posteriores en lugar de corregirlas en silencio.</li></ul>
+<h3 id="dev-agent-system-java-configuracion-antes-del-primer-uso-obligatorio">Configuración antes del primer uso (obligatorio)</h3>
+<p>Este preset viene de un proyecto Java/Spring Boot real, con lo específico de ese proyecto <strong>ya parametrizado por quien lo aportó</strong> con los siguientes placeholders. Sustitúyelos por los valores reales de tu proyecto en cuanto instales el preset (recomendado: anotarlos en <code>.claude/agent-system.config.json</code>, sección <code>canonicalExamples</code> o una entrada propia):</p>
+<div class="table-wrap"><table><thead><tr><th>Placeholder</th><th>Qué es</th><th>Dónde aparece</th></tr></thead><tbody><tr><td><code>&lt;COMMONS_PACKAGE_ROOT&gt;</code></td><td>Raíz de paquete de la librería compartida (ej. <code>com.miempresa.miproyecto.commons</code>)</td><td><code>java-package-architecture.md</code></td></tr><tr><td><code>&lt;COMMONS_REPO_PATH&gt;</code></td><td>Ruta local del repo hermano editable de la librería compartida</td><td><code>java-package-architecture.md</code></td></tr><tr><td><code>&lt;PROJECT_PACKAGE_ROOT&gt;</code></td><td>Raíz de paquete del proyecto local (ej. <code>com.miempresa.miproyecto</code>)</td><td><code>java-package-architecture.md</code></td></tr></tbody></table></div>
+<p>Si tu proyecto <strong>no</strong> separa código en librería compartida + proyecto local (arquitectura mono-paquete), la regla de colocación de <code>java-package-architecture.md</code> no aplica tal cual — simplifícala a una única jerarquía de paquetes.</p>
+<h4 id="dev-agent-system-java-scripts-de-azure-devops-opcionales">Scripts de Azure DevOps (opcionales)</h4>
+<p><code>templates/scripts/azure/sync-hu.mjs</code> y <code>add-work-item-comment.mjs</code> asumen que el proyecto rastrea trabajo en Azure Boards. Antes de usarlos, exporta (o añade a <code>.env.local</code>):</p>
+<pre><code>AZURE_ORG=&lt;tu organización de Azure DevOps&gt;
+AZURE_PROJECT=&lt;tu proyecto de Azure Boards&gt;
+AZURE_PAT=&lt;tu Personal Access Token&gt;</code></pre>
+<p>Ambos scripts fallan explícitamente con instrucciones si falta alguna. Si tu equipo no usa Azure DevOps, ignora esta carpeta — no aplica.</p>
+<p><strong>Nota de seguridad</strong>: la versión original de estos scripts (en el material de origen) tenía un Personal Access Token real hardcodeado como fallback en el propio código fuente. Ya fue revocado y los scripts de este plugin se reescribieron para exigir las tres variables de entorno sin ningún valor por defecto — no reintroduzcas ese patrón si modificas estos scripts.</p>
+<h3 id="dev-agent-system-java-configuracion-que-el-init-debe-aplicar">Configuración que el init debe aplicar</h3>
+<p><code>rules.alwaysOn</code>: java-package-architecture, java-error-handling, java-validation, java-security, java-persistence, java-naming-style, code-quality-guardrails. <code>rules.onDemand</code>: filter-and-export-specification, entity-audit, exceptions-i18n, legacy-static-analysis-catalog (solo auditoría), test-data-index, default-filters-frontend-responsibility.</p>
+<p>Comandos de proyecto observados en el origen (confirmar contra el proyecto real, Maven):</p>
+<ul><li>Build: <code>./mvnw clean compile</code> · Test: <code>./mvnw test</code> (un método: <code>./mvnw test -Dtest=Clase#metodo</code>) · Empaquetar: <code>./mvnw clean package</code> · Migraciones: <code>./mvnw flyway:migrate</code> / <code>./mvnw flyway:info</code> · Cobertura: <code>./mvnw clean org.jacoco:jacoco-maven-plugin:report</code> · Análisis estático: <code>./mvnw sonar:sonar</code>.</li><li><strong>No hay formatter automático dedicado</strong> en el proyecto de referencia — las reglas de análisis estático se verifican al generar código (ver <code>code-quality-guardrails.md</code>), no vía un comando de formateo. No asumas uno que no exista.</li><li><strong>Gotcha de build a documentar en el proyecto real</strong>: si depende de una librería hermana editable en modo SNAPSHOT, compilar siempre en modo offline (<code>-o</code>) tras reinstalarla localmente — un build online puede pisar el SNAPSHOT local con una versión remota más vieja y producir cientos de errores de compilación falsos (ver <code>java-package-architecture.md</code>).</li></ul>
+<h3 id="dev-agent-system-java-errores-aprendidos-semilla">Errores aprendidos semilla</h3>
+<p><code>templates/project/knowledge-log-seed.md</code> trae 4 casos reales ya generalizados (Hibernate/asociación id-only en auditoría, Maven SNAPSHOT + build offline, JPA Specification con JOIN cartesiano, encoding legacy en i18n) para sembrar el knowledge-log del proyecto vía el skill <code>self-learning-error-prevention</code> de <code>dev-agent-system-core</code>. Son punto de partida, no entradas definitivas.</p>
+<h3 id="dev-agent-system-java-propuestas-no-implementadas">Propuestas no implementadas</h3>
+<p>El material de origen incluía además un <strong>pipeline de wiki local</strong> (varios scripts encadenados: cola de tareas de documentación, análisis de impacto de HU, detección de drift wiki/código, auditoría de salud de la wiki) y scripts de verificación HU/feature dedicados. <strong>No se incluyeron en este preset</strong>: se solapan conceptualmente con el sistema de wiki que ya aporta <code>dev-agent-system-core</code> (hooks + skills genéricas), y traerlos tal cual crearía dos sistemas de wiki paralelos y potencialmente contradictorios dentro del mismo proyecto. Si tu equipo quiere ese nivel de automatización de wiki, evalúalo como una posible mejora futura de <code>dev-agent-system-core</code> en sí, no como parte de este preset de stack.</p>
+<p>MCP servers: ninguno identificado como maduro para Java/Spring Boot en el momento de curar este preset (Maven Central, Spring, o un gateway interno serían candidatos si aparece uno oficial).</p>
+<h3 id="dev-agent-system-java-notas">Notas</h3>
+<ul><li>Las reglas y skills copiados son de un proyecto real: <strong>cada proyecto debe adaptarlos</strong> a su realidad tras el init (nombres de paquete, si hay librería compartida o no, tracker de trabajo usado, etc.).</li><li>Varios guardarraíles de este preset (snapshot de auditoría con asociación id-only, SNAPSHOT de Maven pisado por build online, JOIN cartesiano en filtro de seguridad, encoding legacy corrompido) provienen de bugs reales detectados — no son teoría.</li><li><code>spec-gated-test-authoring</code> es el skill más distintivo: el código nunca es la fuente de verdad para un test, solo la especificación funcional lo es. Si tu equipo no mantiene especificaciones funcionales sincronizadas en algún sitio consultable, este skill parará constantemente pidiendo el identificador de HU — evalúa si encaja con tu forma de trabajar antes de activarlo tal cual.</li><li>Las mejoras generalizables se suben como PR a este preset.</li></ul>
+        </div>
+      </article>
+
+      <article class="plugin" id="dev-angular-knowledge" data-category="dev">
+        <header class="plugin-header">
+          <h2>dev-angular-knowledge <span class="badge">v1.0.0</span></h2>
+          <p class="plugin-desc">Capacidad completa de desarrollo Angular, en espanol: componentes, DI, signals, forms, routing, HTTP, testing, styling, tooling, creacion de proyectos nuevos, guardrails de calidad, separacion de responsabilidades en formularios complejos y registro de errores conocidos. Incluye agentes de arquitectura, revision, tests y migracion.</p>
+          <div class="keywords"><span class="kw">angular</span><span class="kw">frontend</span><span class="kw">signals</span><span class="kw">typescript</span></div>
+        </header>
+        <div class="plugin-body">
+          <p>Plugin de Claude Code con capacidad completa de desarrollo Angular (v20+/v21+), en español: componentes, DI, signals, forms, routing, HTTP, testing, styling, tooling y creación de proyectos nuevos, más agentes especializados, guardrails de calidad, separación de responsabilidades en formularios complejos y un registro de errores conocidos aportado por el equipo dev de Attrim.</p>
+<p>Incluye el bundle oficial de Angular/Google (<code>angular-developer</code>, MIT, traducido) junto con skills y agentes propios de Attrim que lo complementan.</p>
+<h3 id="dev-angular-knowledge-que-incluye">Qué incluye</h3>
+<h4 id="dev-angular-knowledge-agentes">Agentes</h4>
+<div class="table-wrap"><table><thead><tr><th>Agente</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>angular-arquitecto</code></td><td>Diseña y escafola features/componentes/servicios nuevos: decide signals vs. signal forms vs. reactive forms clásicos, estructura de rutas y DI, y genera el esqueleto de código (deja la lógica de negocio con <code>TODO</code>). Pregunta y espera confirmación antes de escribir nada.</td></tr><tr><td><code>angular-revisor</code></td><td>Revisor senior que audita un PR/diff/componente aplicando las skills de componentes, signals, forms, DI, routing y calidad, más el knowledge-log de errores conocidos. Solo analiza, nunca edita código; devuelve un informe priorizado por severidad.</td></tr><tr><td><code>angular-test-writer</code></td><td>Escribe o mejora tests unitarios/integración (Vitest o Jasmine, TestBed, component harnesses) siguiendo la convención de mocks del proyecto y evitando antipatrones ya registrados (p. ej. mocks de <code>Router</code> incompletos). Ejecuta los tests y los corrige si fallan.</td></tr><tr><td><code>angular-migrador</code></td><td>Migra un patrón Angular concreto y acotado (NgModules→standalone, <code>@Input</code>/<code>@Output</code>→signals, <code>Observable</code>→signals, reactive forms→Signal Forms, <code>*ngIf</code>/<code>*ngFor</code>→<code>@if</code>/<code>@for</code>) sin tocar el resto del archivo. Corre tests antes/después para verificar que no rompe nada.</td></tr></tbody></table></div>
+<h4 id="dev-angular-knowledge-comandos">Comandos</h4>
+<div class="table-wrap"><table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>/ng-new-project &lt;nombre y requisitos&gt;</code></td><td>Crea una app Angular nueva con la CLI, siguiendo la skill <code>angular-new-app</code> (comprueba CLI, flags, <code>--ai-config</code>, Tailwind opcional).</td></tr><tr><td><code>/ng-new-feature &lt;nombre y requisitos&gt;</code></td><td>Invoca a <code>angular-arquitecto</code> para diseñar y escafolar un componente/feature/servicio nuevo.</td></tr><tr><td><code>/ng-review [alcance opcional]</code></td><td>Invoca a <code>angular-revisor</code> para revisar el diff actual (o el alcance indicado) frente a la rama base.</td></tr><tr><td><code>/ng-test &lt;componente/servicio/ruta&gt;</code></td><td>Invoca a <code>angular-test-writer</code> para generar o mejorar tests de lo indicado.</td></tr><tr><td><code>/ng-migrate &lt;archivo/componente y patrón&gt;</code></td><td>Invoca a <code>angular-migrador</code> para migrar un patrón concreto y acotado.</td></tr></tbody></table></div>
+<h4 id="dev-angular-knowledge-skills">Skills</h4>
+<div class="table-wrap"><table><thead><tr><th>Skill</th><th>Propósito / cuándo se activa</th></tr></thead><tbody><tr><td><code>angular-developer</code></td><td>Bundle oficial de Angular (Google, MIT) con guía transversal de código y arquitectura: reactividad (signals, <code>linkedSignal</code>, <code>resource</code>), forms, DI, routing, SSR, accesibilidad ARIA, animaciones, estilos (incluye Tailwind), testing y CLI. Contiene ~30 referencias en <code>references/</code>.</td></tr><tr><td><code>angular-new-app</code></td><td>Crea una app Angular nueva con la CLI (comprobación de CLI, flags recomendados, <code>--ai-config</code>, Tailwind). Requiere Node/npm y acceso a internet.</td></tr><tr><td><code>angular-component</code></td><td>Componentes standalone v20+: inputs/outputs basados en signals, <code>OnPush</code>, host bindings, proyección de contenido, lifecycle hooks.</td></tr><tr><td><code>angular-signals</code></td><td>Estado reactivo con <code>signal()</code>, <code>computed()</code>, <code>linkedSignal()</code>, <code>effect()</code>; migración desde <code>BehaviorSubject</code>/<code>Observable</code>.</td></tr><tr><td><code>angular-di</code></td><td>Inyección de dependencias con <code>inject()</code>, tokens de inyección y configuración de providers (root/componente/ruta).</td></tr><tr><td><code>angular-directives</code></td><td>Directivas de atributo/host para DOM; deja claro que <code>@if</code>/<code>@for</code>/<code>@switch</code> deben usarse en vez de directivas estructurales custom.</td></tr><tr><td><code>angular-forms</code></td><td>Signal Forms (v21+, experimental) con binding automático y validación por esquema; referencia también reactive forms clásicos para producción estable.</td></tr><tr><td><code>angular-form-responsibility-separation</code></td><td>Separación estricta de responsabilidades en formularios reactivos complejos (componente delgado + servicios enfocados) cuando el componente supera ~200 líneas.</td></tr><tr><td><code>angular-http</code></td><td>Fetching de datos con <code>resource()</code>, <code>httpResource()</code> y <code>HttpClient</code>, interceptores, estados de carga basados en signals.</td></tr><tr><td><code>angular-routing</code></td><td>Enrutado v20+: lazy loading, guards funcionales, resolvers, parámetros de ruta basados en signals.</td></tr><tr><td><code>angular-testing</code></td><td>Tests unitarios/integración v21+ con Vitest (recomendado) o Jasmine, TestBed, component harnesses, componentes con signals y <code>OnPush</code>.</td></tr><tr><td><code>angular-tooling</code></td><td>Uso eficaz de la Angular CLI: generación de código, build, test, configuración.</td></tr><tr><td><code>code-quality-guardrails</code></td><td>Checklist de calidad no negociable (ESLint, Oxlint, code smells estilo Sonar) aplicable a toda creación/refactor/revisión de código.</td></tr><tr><td><code>self-learning-error-prevention</code></td><td>Captura y aplica aprendizaje técnico de errores reales ya cometidos por el equipo (<code>references/knowledge-log.md</code>), para no repetirlos; se activa ante bugs, regresiones o revisiones post-fix.</td></tr></tbody></table></div>
+<h3 id="dev-angular-knowledge-como-instalarlo">Cómo instalarlo</h3>
+<p>Este plugin se distribuye a través del marketplace interno <code>attrim-marketplace</code> de Claude Code. Desde Claude Code:</p>
+<ol><li>Añade el marketplace (si aún no lo tienes añadido):</li></ol>
+<pre><code>   /plugin marketplace add attrim-marketplace</code></pre>
+<ol><li>Instala el plugin:</li></ol>
+<pre><code>   /plugin install dev-angular-knowledge@attrim-marketplace</code></pre>
+<p>Sigue el flujo estándar de gestión de plugins de Claude Code (<code>/plugin</code>) para actualizarlo o desinstalarlo.</p>
+<h3 id="dev-angular-knowledge-como-usarlo">Cómo usarlo</h3>
+<ul><li><strong>Crear un componente nuevo con formulario</strong>: pide en lenguaje natural, por ejemplo *"crea un componente de edición de cliente con un formulario reactivo y ruta propia"*, o invoca directamente:</li></ul>
+<pre><code>  /ng-new-feature editor de cliente con formulario y ruta propia</code></pre>
+<p>  Esto dispara al agente <code>angular-arquitecto</code>, que primero inspecciona el proyecto (versión de Angular, standalone/NgModules, tipo de forms en uso), propone el árbol de archivos a crear y espera tu confirmación antes de escribir el esqueleto.</p>
+<ul><li><strong>Revisar un PR antes de fusionar</strong>: ejecuta</li></ul>
+<pre><code>  /ng-review</code></pre>
+<p>  para que <code>angular-revisor</code> audite el <code>git diff</code> actual frente a la rama base y devuelva un informe por severidad (Crítico/Alto/Medio/Bajo), citando coincidencias con el <code>knowledge-log.md</code> (por ejemplo, un mock de <code>Router</code> incompleto ya visto como <code>LE-0004</code>).</p>
+<ul><li><strong>Añadir tests a un servicio existente</strong>: ejecuta</li></ul>
+<pre><code>  /ng-test src/app/features/clientes/clientes.service.ts</code></pre>
+<p>  y <code>angular-test-writer</code> detectará si el proyecto usa Vitest o Jasmine, seguirá la convención de mocks (<code>*.service.mock.ts</code> con <code>getProvider()</code>) y ejecutará los tests antes de darlos por terminados.</p>
+<ul><li><strong>Migrar un patrón concreto</strong>: por ejemplo, pedir *"migra los inputs por decorador de <code>UserCardComponent</code> a signals"* o ejecutar</li></ul>
+<pre><code>  /ng-migrate src/app/shared/ui/user-card/user-card.component.ts de @Input a input()</code></pre>
+<p>  <code>angular-migrador</code> migra solo ese patrón, corre los tests existentes (o <code>ng build</code> si no hay) antes y después, y avisa si el cambio queda sin red de seguridad automatizada.</p>
+<ul><li><strong>Crear un proyecto Angular desde cero</strong>: pide *"crea una app Angular nueva llamada portal-clientes con SSR y Tailwind"* o ejecuta</li></ul>
+<pre><code>  /ng-new-project portal-clientes con ssr y tailwind</code></pre>
+<h3 id="dev-angular-knowledge-requisitos-previos">Requisitos previos</h3>
+<ul><li>Angular CLI accesible (<code>ng</code>/<code>npx ng</code>) para las skills <code>angular-new-app</code> y <code>angular-tooling</code>; si no está instalada globalmente, la skill ofrece instalarla con <code>npm install -g @angular/cli</code>.</li><li>Node, npm y acceso a internet para crear proyectos nuevos (requisito declarado explícitamente en <code>angular-new-app</code>).</li><li>No requiere configuración de variables de entorno ni placeholders propios del plugin.</li></ul>
+<h3 id="dev-angular-knowledge-notas">Notas</h3>
+<ul><li><strong>Signal Forms son experimentales</strong> (Angular v21). La skill <code>angular-forms</code> y el agente <code>angular-migrador</code> lo señalan explícitamente: solo se migra a Signal Forms con confirmación explícita del usuario, y para producción estable se recomienda seguir con reactive forms clásicos.</li><li><strong><code>angular-revisor</code> nunca edita código</strong>, solo produce el informe de revisión; cualquier corrección la aplica otro agente o el propio desarrollador.</li><li>El <strong>registro de errores conocidos</strong> (<code>skills/self-learning-error-prevention/references/knowledge-log.md</code>) ya contiene 7 entradas (<code>LE-0001</code> a <code>LE-0007</code>) sobre errores reales del equipo dev de Attrim (p. ej. <code>takeUntilDestroyed</code> fuera de contexto de inyección, <code>FormArray</code> roto por <code>setControl</code>, mocks de <code>Router</code>/DI incorrectos, inestabilidad de <code>p-tree</code> de PrimeNG). Los agentes <code>angular-revisor</code> y <code>angular-migrador</code> consultan este log activamente; añadir nuevas entradas es decisión explícita del usuario, no de los agentes.</li><li>La skill <code>angular-developer</code> es un bundle traducido de material oficial de Angular/Google bajo licencia MIT — sus referencias (<code>references/*.md</code>) cubren en detalle temas que las skills más específicas del plugin (signals, forms, DI, routing, etc.) resumen y complementan con las convenciones propias de Attrim.</li></ul>
+        </div>
+      </article>
+
+      <article class="plugin" id="dev-claude-config-audit" data-category="dev">
+        <header class="plugin-header">
+          <h2>dev-claude-config-audit <span class="badge">v1.0.0</span></h2>
+          <p class="plugin-desc">Comando /claude-analisis: audita la configuración de Claude Code (proyecto/máquina/ambos) y da un informe con nota 1-10 (seguridad, estructura, ajuste al stack) y sugerencias de plugins del marketplace que cubrirían huecos detectados. Solo lee y reporta, nunca modifica nada.</p>
+          <div class="keywords"><span class="kw">claude-code</span><span class="kw">auditoria</span><span class="kw">seguridad</span><span class="kw">configuracion</span></div>
+        </header>
+        <div class="plugin-body">
+          <p>Plugin de Claude Code que audita tu propia configuración de Claude Code (la del proyecto, la de tu máquina, o ambas) y te devuelve un informe con nota 1-10 en seguridad, estructura y ajuste al stack, más sugerencias de plugins del marketplace Attrim que cubrirían los huecos detectados.</p>
+<h3 id="dev-claude-config-audit-que-incluye">Qué incluye</h3>
+<ul><li><strong>Comando <code>/claude-analisis</code></strong> — punto de entrada. Acepta un argumento opcional con el alcance:</li><li><code>proyecto</code> — audita <code>&lt;cwd&gt;/CLAUDE.md</code>, <code>&lt;cwd&gt;/.claude/</code> y <code>.mcp.json</code> de la raíz del proyecto actual.</li><li><code>local</code> (o <code>máquina</code>) — audita <code>~/.claude/CLAUDE.md</code> (o <code>~/.claude/settings.json</code> si no hay CLAUDE.md global) y la configuración de <code>~/.claude/</code> (settings, <code>agents/</code>, <code>commands/</code>, <code>skills/</code>, <code>hooks/</code>, <code>.mcp.json</code>, plugins/marketplaces instalados) — nunca el contenido de <code>~/.claude/projects/*/</code> (transcripts o historial de sesiones, que no es configuración).</li><li><code>ambos</code> — las dos secciones anteriores, con un informe combinado y una conclusión conjunta.</li></ul>
+<p>  Si no se indica el alcance como argumento, el comando pregunta con <code>AskUserQuestion</code>.</p>
+<ul><li><strong>Agente <code>claude-config-auditor</code></strong> — hace el trabajo real de lectura y análisis. Solo tiene acceso a <code>Read</code>, <code>Glob</code>, <code>Grep</code> y <code>Bash</code> (deliberadamente sin <code>Edit</code>/<code>Write</code>). Detecta el stack del proyecto (Angular/React/Vue/Node, .NET, Java/Spring, Python, Go, Rust, etc.) para evaluar el ajuste al stack, calcula la nota final (<code>0.4 × seguridad + 0.3 × estructura + 0.3 × ajuste al stack</code>) y redacta el informe.</li></ul>
+<ul><li><strong>Skill <code>claude-config-audit</code></strong> — checklist y rúbrica que consulta el agente antes de analizar nada: qué buscar en cada dimensión (seguridad, estructura, ajuste al stack) y en qué ficheros. Incluye como referencia <code>marketplace-catalog.md</code>, una foto fija del catálogo de plugins de <code>attrim-marketplace</code> (con fecha de captura) usada para las sugerencias del informe.</li></ul>
+<h3 id="dev-claude-config-audit-solo-lectura-nunca-modifica-nada">Solo lectura — nunca modifica nada</h3>
+<p>Este plugin <strong>nunca edita, borra ni crea ningún fichero</strong>. El agente auditor no tiene las herramientas <code>Edit</code>/<code>Write</code> habilitadas y el propio prompt del agente indica explícitamente que, si detecta la tentación de "arreglarlo ya que estás", debe reportarlo como hallazgo en vez de tocar nada. El informe se muestra solo en el chat; no se genera ningún fichero de salida.</p>
+<p>Además, si el auditor detecta lo que parece un secreto real (API key, token, contraseña, clave privada...), <strong>nunca lo reproduce en el informe</strong> — lo reporta redactado como <code>fichero:línea — tipo de secreto detectado (redactado)</code> junto a la recomendación de rotarlo.</p>
+<h3 id="dev-claude-config-audit-como-instalarlo">Cómo instalarlo</h3>
+<p>Instala el plugin <code>dev-claude-config-audit</code> desde el marketplace <code>attrim-marketplace</code> con el flujo habitual de instalación de plugins de Claude Code (marketplace ya añadido → <code>/plugin install dev-claude-config-audit</code>, o el equivalente en tu cliente).</p>
+<h3 id="dev-claude-config-audit-como-usarlo">Cómo usarlo</h3>
+<p><strong>1. Auditar la configuración del proyecto actual:</strong></p>
+<pre><code>/claude-analisis proyecto</code></pre>
+<p>Obtendrás un informe con secciones <code>[ERROR]</code> / <code>[WARNING]</code> / <code>[OK]</code>, sugerencias de plugins del marketplace que encajen con el stack detectado (por ejemplo, <code>dev-angular-knowledge</code> si el proyecto es Angular y no tiene skills de Angular) y una nota final desglosada, del tipo:</p>
+<pre><code>Seguridad: 8/10 · Estructura: 7/10 · Ajuste al stack: 6/10
+Nota final: 7/10</code></pre>
+<p><strong>2. Auditar la configuración de tu máquina (global, <code>~/.claude/</code>):</strong></p>
+<pre><code>/claude-analisis local</code></pre>
+<p>Aquí la dimensión "ajuste al stack" se reinterpreta: en vez de comprobar si hay skills para un framework concreto, evalúa si la configuración global es agnóstica y no impone convenciones de un proyecto específico a todos tus proyectos.</p>
+<p><strong>3. Auditar ambas a la vez:</strong></p>
+<pre><code>/claude-analisis ambos</code></pre>
+<p>Devuelve un informe con una sección para el proyecto y otra para la máquina, más una conclusión conjunta de 2-3 líneas (por ejemplo, si algo de tu configuración local entra en conflicto con la del proyecto).</p>
+<p><strong>4. Sin argumento</strong> — si simplemente escribes <code>/claude-analisis</code>, el comando te pregunta qué quieres analizar (proyecto / máquina / ambos) antes de invocar al agente.</p>
+<h3 id="dev-claude-config-audit-requisitos-previos">Requisitos previos</h3>
+<ul><li>El alcance analizado debe tener un <code>CLAUDE.md</code> (de proyecto y/o global, según corresponda). Si falta, el agente <strong>detiene esa sección del análisis</strong> y te indica que ejecutes <code>/init</code> ahí primero — sin <code>CLAUDE.md</code> no hay línea base que auditar. En el alcance "ambos", si solo falta uno de los dos, avisa de esa sección y continúa con la que sí existe.</li><li>No requiere configuración adicional (no usa <code>.mcp.json</code> propio ni variables de entorno).</li></ul>
+<h3 id="dev-claude-config-audit-notas">Notas</h3>
+<ul><li>El catálogo de plugins usado para las sugerencias (<code>skills/claude-config-audit/references/marketplace-catalog.md</code>) es una <strong>foto fija</strong> del marketplace, con fecha de captura en la cabecera del fichero (a día de escribir este README: 2026-07-21). Si esa fecha es antigua, el propio informe te lo advertirá — hay que refrescar ese fichero a mano cada vez que se cure/publique un plugin nuevo en <code>attrim-marketplace</code>.</li><li>El propio plugin <code>dev-claude-config-audit</code> nunca se sugiere a sí mismo como recomendación (sería circular).</li><li>Una violación de seguridad grave (secreto real expuesto, permiso que permite exfiltración) hunde la nota de esa dimensión a ≤3 aunque el resto del checklist esté impecable — el informe no promedia mecánicamente hallazgos críticos con hallazgos menores.</li></ul>
+        </div>
+      </article>
+
+      <article class="plugin" id="dev-dynamic-memory" data-category="dev">
+        <header class="plugin-header">
+          <h2>dev-dynamic-memory <span class="badge">v1.0.0</span></h2>
+          <p class="plugin-desc">Sistema de memoria dinamica por proyecto: puntos de guardado manuales /start y /wrap-up, /handoff para traspasar tareas entre miembros del equipo, y /memory-status y /memory-forget para inspeccionar y corregir la memoria a mano. Memoria organizada por tipos (usuario, feedback, proyecto, referencias) con indice, snapshots de sesion y handoffs, local al proyecto y fuera de git.</p>
+          <div class="keywords"><span class="kw">memoria</span><span class="kw">contexto</span><span class="kw">sesiones</span><span class="kw">productividad</span></div>
+        </header>
+        <div class="plugin-body">
+          <p>Sistema de memoria dinámica por proyecto para Claude Code: mantiene contexto entre sesiones (usuario, feedback, estado del proyecto, referencias externas), permite traspasar tareas a otro miembro del equipo y da control manual para inspeccionar o corregir lo guardado. Todo vive dentro del repo, en <code>.claude/memory/</code>, fuera de git.</p>
+<h3 id="dev-dynamic-memory-que-incluye">Qué incluye</h3>
+<h4 id="dev-dynamic-memory-comandos">Comandos</h4>
+<div class="table-wrap"><table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>/start</code></td><td>Al empezar una sesión, carga en silencio toda la memoria guardada (índice, memorias por tipo, último snapshot de sesión) para no perder contexto. No muestra ni resume nada, solo confirma: <code>Memoria del proyecto cargada.</code></td></tr><tr><td><code>/wrap-up</code></td><td>Punto de guardado manual de fin de sesión. Analiza el <code>git diff</code> de la sesión, actualiza automáticamente las memorias relevantes (<code>project_*</code>, <code>feedback_*</code>, <code>user_*</code>, <code>reference_*</code>) y guarda un snapshot de la sesión en <code>.claude/memory/sessions/</code>. No pide confirmación durante el proceso, solo informa del resultado al final.</td></tr><tr><td><code>/handoff [en qué se centrará la siguiente sesión]</code></td><td>Genera un documento de traspaso puntual y autocontenido en <code>.claude/memory/handoffs/</code>, pensado para entregar a <strong>otra persona</strong> (o a una sesión sin contexto previo), no para que lo retomes tú mismo. Redacta datos sensibles y evita duplicar contenido que ya vive en otros artefactos (specs, ADRs, issues, commits).</td></tr><tr><td><code>/memory-status</code></td><td>Muestra al usuario, de forma transparente, qué hay guardado: memorias agrupadas por tipo, número de snapshots de sesión (hasta el límite de 5) y handoffs pendientes. Es el contrapunto visible al silencio de <code>/start</code>.</td></tr><tr><td><code>/memory-forget &lt;tema o archivo&gt;</code></td><td>Borra o corrige a mano una memoria concreta (obsoleta, equivocada, o que ya no se quiere guardar), sin esperar a que <code>/wrap-up</code> la detecte sola. Pide confirmación antes de borrar si hay ambigüedad sobre qué archivo se refiere.</td></tr></tbody></table></div>
+<h4 id="dev-dynamic-memory-skill">Skill</h4>
+<ul><li><strong>memory-keeper</strong>: no es un comando, es la skill que define las reglas compartidas de formato, taxonomía y ubicación que usan todos los comandos anteriores (dónde vive la memoria, formato de cada archivo, qué no guardar nunca). Se activa automáticamente siempre que hay que leer, crear o actualizar <code>.claude/memory/</code>.</li></ul>
+<h4 id="dev-dynamic-memory-organizacion-de-la-memoria-por-tipos">Organización de la memoria por tipos</h4>
+<p>Toda la memoria vive en <code>.claude/memory/</code> dentro del repo, indexada en <code>MEMORY.md</code>. Cada archivo (menos el índice) es de exactamente uno de estos cuatro tipos, indicado en <code>metadata.type</code> del frontmatter:</p>
+<div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Contenido</th><th>Cuándo se guarda</th></tr></thead><tbody><tr><td><code>user_*.md</code></td><td>Rol, objetivos, nivel de conocimiento del usuario en este proyecto</td><td>Al aprender algo sobre quién es el usuario o cómo trabaja</td></tr><tr><td><code>feedback_*.md</code></td><td>Correcciones o confirmaciones sobre CÓMO abordar el trabajo</td><td>Cuando el usuario corrige o confirma un enfoque no obvio</td></tr><tr><td><code>project_*.md</code></td><td>Estado del trabajo en curso: rama, decisiones, bugs, iniciativas activas</td><td>Cuando cambia el estado de "quién hace qué, por qué, para cuándo"</td></tr><tr><td><code>reference_*.md</code></td><td>Punteros a sistemas externos (tickets, canal de Slack, dashboard)</td><td>Cuando se menciona dónde vive información fuera del repo</td></tr></tbody></table></div>
+<p>Además de estos cuatro tipos, existen dos carpetas especiales:</p>
+<ul><li><code>.claude/memory/sessions/YYYY-MM-DD-HH-MM.md</code> — snapshots de sesión (máximo 5; <code>/wrap-up</code> borra el más antiguo al superar el límite).</li><li><code>.claude/memory/handoffs/YYYY-MM-DD-&lt;slug-tarea&gt;.md</code> — documentos de traspaso puntuales generados por <code>/handoff</code>.</li></ul>
+<p>No se guarda nunca lo que se puede derivar leyendo el código, lo que ya está en <code>git log</code>/<code>git blame</code>, recetas de depuración puntuales, ni nada ya documentado en <code>CLAUDE.md</code>.</p>
+<h3 id="dev-dynamic-memory-como-instalarlo">Cómo instalarlo</h3>
+<p>Instala el plugin <code>dev-dynamic-memory</code> desde el marketplace interno <code>attrim-marketplace</code> con el flujo habitual de instalación de plugins de Claude Code (añadir el marketplace si no lo tienes ya, y luego instalar este plugin por su slug).</p>
+<h3 id="dev-dynamic-memory-como-usarlo">Cómo usarlo</h3>
+<p><strong>Flujo básico de sesión:</strong></p>
+<ol><li>Al abrir una sesión de trabajo en un proyecto, ejecuta <code>/start</code>. Si es la primera vez, el plugin crea <code>.claude/memory/</code> (con <code>MEMORY.md</code> vacío) y añade la entrada al <code>.gitignore</code> del proyecto. Si ya había memoria previa, la carga en silencio y responde solo <code>Memoria del proyecto cargada.</code></li><li>Trabajas normalmente en la tarea (features, decisiones, feedback que le das a Claude sobre cómo abordar el proyecto).</li><li>Al terminar la sesión, ejecuta <code>/wrap-up</code> (opcionalmente con una nota breve, ej. <code>/wrap-up terminada la migración de auth</code>). El comando mira el <code>git diff</code> de la sesión, actualiza las memorias de tipo <code>project</code>/<code>feedback</code>/<code>user</code>/<code>reference</code> que correspondan y guarda un snapshot en <code>.claude/memory/sessions/</code>.</li></ol>
+<p><strong>Traspasar una tarea a un compañero:</strong></p>
+<ul><li>Si vas a dejar una tarea a medias para que la continúe otro miembro del equipo (o tú mismo en otra máquina), ejecuta <code>/handoff continuar la migración de auth a signals</code>. Se genera un archivo como <code>.claude/memory/handoffs/2026-07-20-migrar-auth-a-signals.md</code> con el resumen del estado, qué queda pendiente y qué skills debería invocar el siguiente agente. Como <code>.claude/memory/</code> está fuera de git, ese archivo no viaja con un <code>git pull</code> — hay que compartirlo aparte (Slack, copiar el contenido, etc.).</li></ul>
+<p><strong>Consultar y corregir la memoria a mano:</strong></p>
+<ul><li>Para ver qué hay guardado sin abrir archivos uno a uno: <code>/memory-status</code>. Lista las memorias agrupadas por tipo, cuántos snapshots hay (de un máximo de 5) y qué handoffs quedan pendientes.</li><li>Si una memoria quedó obsoleta o es incorrecta (por ejemplo, menciona una rama ya cerrada), corrígela con <code>/memory-forget rama feature/auth-antigua</code>. El comando busca coincidencias, pide confirmación si hay ambigüedad, y borra o actualiza el archivo según lo que se le pida.</li></ul>
+<h3 id="dev-dynamic-memory-requisitos-configuracion-previa">Requisitos / configuración previa</h3>
+<ul><li>No requiere configuración ni dependencias externas: los comandos solo usan herramientas estándar (<code>Read</code>, <code>Write</code>, <code>Edit</code>, <code>Glob</code>, <code>Bash</code>).</li><li>La memoria se guarda siempre en <code>.claude/memory/</code> <strong>dentro del repo del proyecto actual</strong>, nunca en <code>~/.claude</code> ni en rutas absolutas de usuario/máquina.</li><li><code>.claude/memory/</code> debe estar en el <code>.gitignore</code> del proyecto — el propio plugin añade esa entrada automáticamente la primera vez que se usa, si no está ya. Es memoria local del proyecto (y de quien la generó), no memoria de equipo: nunca se commitea ni se propone en un PR.</li></ul>
+<h3 id="dev-dynamic-memory-notas-relevantes">Notas relevantes</h3>
+<ul><li><code>/wrap-up</code> y <code>/handoff</code> son complementarios, no equivalentes: <code>/wrap-up</code> guarda contexto acumulativo y tipado para que <strong>tú mismo</strong> lo retomes en una sesión futura (vía <code>/start</code>); <code>/handoff</code> genera un documento suelto, de un solo uso, para entregar a <strong>otra persona</strong> sin acceso a tu historial de conversación.</li><li>Como los handoffs quedan fuera de git, compartirlos con un compañero requiere un paso manual (Slack, pegar el contenido, etc.) — no basta con que el compañero haga <code>git pull</code>.</li><li><code>/handoff</code> redacta explícitamente datos sensibles (claves, contraseñas, tokens, datos personales) antes de guardarlos en el documento de traspaso.</li><li>Los snapshots de sesión están limitados a 5: al crear uno nuevo por encima del límite, <code>/wrap-up</code> borra automáticamente el más antiguo.</li></ul>
+        </div>
+      </article>
+
+      <article class="plugin" id="dev-explain-branch" data-category="dev">
+        <header class="plugin-header">
+          <h2>dev-explain-branch <span class="badge">v1.0.0</span></h2>
+          <p class="plugin-desc">Genera la descripción de una Merge/Pull Request a partir del diff de la rama actual, filtrando lo que de verdad le importa a un reviewer. Agnóstico de stack. Opcionalmente (--azure=&lt;ID&gt;) publica además un resumen técnico como comentario en un work item de Azure DevOps, previa confirmación explícita. El modo Azure requiere configurar AZURE_ORG/AZURE_PROJECT/AZURE_PAT.</p>
+          <div class="keywords"><span class="kw">git</span><span class="kw">merge-request</span><span class="kw">code-review</span><span class="kw">azure-devops</span></div>
+        </header>
+        <div class="plugin-body">
+          <p>Plugin de Claude Code que genera la descripción de una Merge/Pull Request a partir del diff de la rama actual, filtrando lo que de verdad le importa a un reviewer.</p>
+<h3 id="dev-explain-branch-que-incluye">Qué incluye</h3>
+<p>El plugin trae un único comando:</p>
+<ul><li><strong><code>/explain-this-branch [rama-base opcional, default develop] [--azure=&lt;ID&gt;]</code></strong></li></ul>
+<h4 id="dev-explain-branch-comportamiento-por-defecto-modo-mr">Comportamiento por defecto (modo MR)</h4>
+<p>Sin ningún flag, el comando:</p>
+<ol><li>Determina la rama base (el argumento que se pase, o <code>develop</code> por defecto; si el proyecto no usa <code>develop</code>, se confirma con el usuario si usar <code>main</code>/<code>master</code>).</li><li>Analiza los cambios con <code>git log &lt;base&gt;..HEAD --oneline</code> y <code>git diff &lt;base&gt;...HEAD --stat</code> (solo baja a diffs de ficheros concretos si el log/stat no bastan para entender la intención).</li><li>Aplica un filtro de valor para el reviewer: solo entra lo que cambia <strong>cómo</strong> revisa o <strong>qué</strong> debe vigilar (contrato de API, migraciones, cambios de arquitectura, seguridad, breaking changes, zonas de riesgo). Fuera lint, formato, imports reordenados, tests que solo acompañan al código, documentación interna o tooling del agente (<code>.claude/*</code>, <code>.agents/*</code>).</li><li>Agrupa los cambios por módulo/funcionalidad (nunca commit por commit ni archivo por archivo) y, solo si aporta, usa un diagrama <code>mermaid</code>, una tabla <code>antes | ahora</code> o un bloque <code>&lt;details&gt;</code>.</li><li>Emite el resultado como un bloque de código markdown copiable directamente en el chat, listo para pegar en la descripción de la MR. <strong>No crea ficheros ni hace commits.</strong></li></ol>
+<p>Es agnóstico de stack: el análisis se basa en <code>git log</code>/<code>git diff</code>, no en leer el código fuente del proyecto.</p>
+<p>Los cambios sin commitear (working tree) se ignoran por defecto; solo se incluyen si el usuario lo pide expresamente, marcados como "pendiente de commit".</p>
+<h4 id="dev-explain-branch-modo-azure-devops-opcional-azure-id">Modo Azure DevOps opcional (<code>--azure=&lt;ID&gt;</code>)</h4>
+<p>Si se añade <code>--azure=&lt;ID&gt;</code> (o se pide en lenguaje natural, p. ej. "publícalo en la HU 1099"), el comando genera además un <strong>segundo texto</strong>, más técnico, orientado a trazabilidad (endpoints afectados, DTOs/tipos, resumen técnico de implementación, migraciones), y lo publica como comentario en ese work item de Azure DevOps.</p>
+<p>Este modo es aditivo: no sustituye la descripción de la MR, se genera después y reutiliza el mismo análisis git. Es aquí donde el plugin deja de ser agnóstico de stack: los patrones de extracción de endpoints y DTOs se adaptan al framework del proyecto (Spring, .NET, NestJS, Express/Fastify, etc.).</p>
+<p>Antes de publicar, <strong>siempre</strong> se muestra el texto exacto en el chat y se pide confirmación explícita — nunca se publica sin ella.</p>
+<h3 id="dev-explain-branch-como-instalarlo">Cómo instalarlo</h3>
+<p>Instala el plugin <code>dev-explain-branch</code> desde el marketplace <code>attrim-marketplace</code> con el flujo habitual de instalación de plugins de Claude Code (<code>/plugin install dev-explain-branch@attrim-marketplace</code> o el mecanismo equivalente que use tu configuración).</p>
+<h3 id="dev-explain-branch-como-usarlo">Cómo usarlo</h3>
+<h4 id="dev-explain-branch-ejemplo-1-uso-normal-sin-azure">Ejemplo 1 — uso normal, sin Azure</h4>
+<pre><code>/explain-this-branch</code></pre>
+<p>Compara la rama actual contra <code>develop</code>, analiza commits y diff, y devuelve en el chat un bloque markdown copiable con <code>## ¿Qué incluye esta MR?</code>, <code>### Cambios principales</code> y (si aporta) <code>### Notas para el reviewer</code>. También se puede indicar otra rama base explícitamente:</p>
+<pre><code>/explain-this-branch main</code></pre>
+<h4 id="dev-explain-branch-ejemplo-2-con-azure-id-pidiendo-confirmacion-antes-de-publicar">Ejemplo 2 — con <code>--azure=&lt;ID&gt;</code>, pidiendo confirmación antes de publicar</h4>
+<pre><code>/explain-this-branch develop --azure=1099</code></pre>
+<p>Genera primero la descripción de la MR como en el ejemplo 1 y, a continuación, construye el resumen técnico para la HU 1099 (endpoints afectados, DTOs/tipos, resumen técnico, otros cambios relevantes) y <strong>lo muestra en el chat en una previsualización</strong>, preguntando algo como "¿Confirmas que publique este comentario en la HU #1099?". Solo tras una respuesta explícita ("sí", "confirma", "adelante"...) ejecuta el script de publicación; un silencio o un mensaje ambiguo no se interpreta como confirmación. Si se pide un cambio en el texto, se ajusta y se vuelve a mostrar antes de publicar.</p>
+<p>También se puede pedir en lenguaje natural sin usar el flag: "explica la rama y publícalo en la HU 1099".</p>
+<h4 id="dev-explain-branch-ejemplo-3-caso-limite-rama-sin-commits-diff-frente-a-la-base">Ejemplo 3 — caso límite: rama sin commits/diff frente a la base</h4>
+<pre><code>/explain-this-branch develop</code></pre>
+<p>Si <code>git log &lt;base&gt;..HEAD --oneline</code> y <code>git diff &lt;base&gt;...HEAD --stat</code> no devuelven nada (la rama actual está al día con la base o no tiene commits propios), no hay contenido que resuma un cambio para el reviewer — el comando no tiene material del que generar una descripción con sentido y así lo señala en vez de inventar contenido.</p>
+<h3 id="dev-explain-branch-configuracion">Configuración</h3>
+<p>El modo Azure DevOps requiere tres variables de entorno (sin valores por defecto, nunca hardcodeadas):</p>
+<div class="table-wrap"><table><thead><tr><th>Variable</th><th>Significado</th></tr></thead><tbody><tr><td><code>AZURE_ORG</code></td><td>Organización de Azure DevOps</td></tr><tr><td><code>AZURE_PROJECT</code></td><td>Proyecto de Azure Boards</td></tr><tr><td><code>AZURE_PAT</code></td><td>Personal Access Token con permiso de escritura en comentarios de work items</td></tr></tbody></table></div>
+<p>Se pueden definir en <code>.env.local</code> o exportarlas en el entorno donde corre Claude Code.</p>
+<p>Si falta alguna, el script <code>scripts/add-work-item-comment.mjs</code> se detiene con un error listando las que faltan (<code>❌ Faltan variables de entorno: ...</code>) y <strong>no publica nada</strong>. La skill nunca pide ni acepta un token pegado directamente en la conversación como sustituto.</p>
+<p>Si tu equipo no usa Azure DevOps, este modo simplemente no aplica: usa el comando sin <code>--azure=&lt;ID&gt;</code> y obtienes solo la descripción de la MR.</p>
+<h3 id="dev-explain-branch-notas-relevantes">Notas relevantes</h3>
+<ul><li><strong>Seguridad del PAT</strong>: el <code>AZURE_PAT</code> nunca se hardcodea en el script, en la conversación ni en ningún fichero del repo — siempre se lee de <code>process.env</code>. La skill tiene instrucción explícita de no aceptar ni pedir un token pegado en el chat.</li><li><strong>Confirmación obligatoria</strong>: no existe ninguna vía del modo Azure que publique sin haber mostrado antes el texto exacto y recibido una confirmación explícita del usuario.</li><li>El comentario en Azure DevOps se construye en un fichero temporal en markdown simple y se publica con <code>node scripts/add-work-item-comment.mjs &lt;ID&gt; &lt;ruta-fichero&gt;</code> — deliberadamente no se construye el texto como string inline en <code>curl</code>/bash, porque el contenido puede llevar backticks y comillas que el shell interpretaría mal. El script convierte ese markdown mínimo (negrita, código inline, listas) a HTML, que es lo que espera la API de comentarios de work items.</li><li>Se puede usar <code>--dry-run</code> en el script para ver el HTML resultante sin publicar nada, por encima de la previsualización en markdown que ya se muestra en el chat.</li><li>La skill filtra endpoints y DTOs directamente del diff real: no inventa ni generaliza ("se han tocado varios DTOs") si no aparecen en el diff.</li><li>Esta skill no es una revisión de código: no evalúa la calidad de los cambios ni propone correcciones.</li></ul>
+        </div>
+      </article>
+
+      <article class="plugin" id="dev-java-knowledge" data-category="dev">
+        <header class="plugin-header">
+          <h2>dev-java-knowledge <span class="badge">v1.0.0</span></h2>
+          <p class="plugin-desc">Capacidad completa de desarrollo Java/Spring Boot: lenguaje Java 21/25, clean code, SOLID, patrones de diseno, arquitectura por features, API REST, persistencia JPA, manejo de errores, seguridad, concurrencia, rendimiento, observabilidad y testing. Incluye agentes de revision, arquitectura, tests y auditoria de seguridad.</p>
+          <div class="keywords"><span class="kw">java</span><span class="kw">spring boot</span><span class="kw">backend</span><span class="kw">jpa</span><span class="kw">testing</span><span class="kw">seguridad</span></div>
+        </header>
+        <div class="plugin-body">
+          <p>Plugin de Claude Code con capacidad completa de desarrollo Java/Spring Boot: lenguaje Java 21/25, clean code, SOLID, patrones de diseño, arquitectura por features, API REST, persistencia JPA, manejo de errores, seguridad, concurrencia, rendimiento, observabilidad y testing. Incluye agentes especializados de revisión, arquitectura, tests y auditoría de seguridad.</p>
+<h3 id="dev-java-knowledge-que-incluye">Qué incluye</h3>
+<h4 id="dev-java-knowledge-agentes">Agentes</h4>
+<div class="table-wrap"><table><thead><tr><th>Agente</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>java-reviewer</code></td><td>Revisor senior de código Java/Spring Boot. Audita un PR, una clase o un diff antes de fusionar; aplica las checklists de code review, SOLID, clean code, seguridad, concurrencia y rendimiento y devuelve un informe priorizado por severidad (Crítico/Alto/Medio/Bajo). Solo analiza, nunca edita código.</td></tr><tr><td><code>java-architect</code></td><td>Diseña y escafolda un módulo o feature nuevo en un backend Java/Spring Boot: decide organización de paquetes (por capas o por feature), estructura de controller/service/repository/DTO/mapper, manejo de errores y persistencia. A diferencia de un agente puramente conversacional, sí escribe el esqueleto de código tras confirmación del usuario.</td></tr><tr><td><code>java-test-writer</code></td><td>Escribe o mejora tests JUnit 5 + AssertJ + Mockito + Testcontainers. Decide el tipo de test correcto (unitario, slice o integración), sigue el patrón AAA, y ejecuta los tests antes de darlos por terminados.</td></tr><tr><td><code>java-security-auditor</code></td><td>Auditoría de seguridad exhaustiva antes de una release: OWASP Top 10, validación de entrada, gestión de secretos, autenticación/autorización, deserialización y dependencias vulnerables. Produce un informe con severidad y remediación concreta. Solo analiza, nunca edita código.</td></tr></tbody></table></div>
+<h4 id="dev-java-knowledge-comandos">Comandos</h4>
+<div class="table-wrap"><table><thead><tr><th>Comando</th><th>Qué hace</th></tr></thead><tbody><tr><td><code>/java-review [alcance]</code></td><td>Invoca a <code>java-reviewer</code> para revisar el diff actual (o el alcance indicado) frente a la rama base.</td></tr><tr><td><code>/java-new-feature &lt;nombre y entidades&gt;</code></td><td>Invoca a <code>java-architect</code> para diseñar y escafoldar un módulo/feature nuevo, respetando las convenciones ya existentes en el proyecto.</td></tr><tr><td><code>/java-test &lt;ruta o funcionalidad&gt;</code></td><td>Invoca a <code>java-test-writer</code> para generar o mejorar los tests de la clase o funcionalidad indicada.</td></tr><tr><td><code>/java-security-audit [alcance]</code></td><td>Invoca a <code>java-security-auditor</code> para una auditoría de seguridad completa, pensada para correr antes de una release.</td></tr><tr><td><code>/java-refactor-solid &lt;ruta de la clase&gt;</code></td><td>Revisa una clase frente a los principios SOLID y clean code, y propone (sin aplicar) un refactor concreto.</td></tr></tbody></table></div>
+<h4 id="dev-java-knowledge-skills-se-activan-automaticamente-segun-el-contexto-sin-invocacion-explicita">Skills (se activan automáticamente según el contexto, sin invocación explícita)</h4>
+<div class="table-wrap"><table><thead><tr><th>Skill</th><th>Cubre</th></tr></thead><tbody><tr><td><code>java-language</code></td><td>Java 21/25: records, sealed classes, pattern matching, switch expressions, text blocks, <code>var</code>, <code>Optional</code>, virtual threads, <code>StructuredTaskScope</code>.</td></tr><tr><td><code>clean-code</code></td><td>DRY, KISS, YAGNI, naming, tamaño de métodos, inmutabilidad, guard clauses, Tell Don't Ask.</td></tr><tr><td><code>solid-principles</code></td><td>Checklist SOLID con ejemplos en Java.</td></tr><tr><td><code>design-patterns</code></td><td>Strategy, Builder, Factory, Repository, Decorator, Observer, Specification, Command — cuándo aplicar cada uno.</td></tr><tr><td><code>layered-feature-architecture</code></td><td>Organización de paquetes por feature (controller/service/repository/dto/mapper por dominio); es la arquitectura de referencia del proyecto.</td></tr><tr><td><code>spring-boot</code></td><td>Spring Boot 4: controllers, services, repositories, DI, <code>@ConfigurationProperties</code>, <code>@RestControllerAdvice</code>, eventos, <code>@Async</code>, Actuator, virtual threads.</td></tr><tr><td><code>api-design</code></td><td>Diseño de APIs REST: DTOs con records, códigos HTTP, paginación con <code>Pageable</code>, Bean Validation, versionado, OpenAPI/Swagger.</td></tr><tr><td><code>persistence</code></td><td>Entidades JPA, repositorios Spring Data, prevención de N+1 (<code>JOIN FETCH</code>/<code>@EntityGraph</code>), <code>LazyInitializationException</code>, locking optimista, migraciones Flyway/Liquibase.</td></tr><tr><td><code>error-handling</code></td><td>Jerarquías de excepciones, <code>GlobalExceptionHandler</code> con <code>@RestControllerAdvice</code>, formato de error consistente, <code>Result</code> type, retry con backoff.</td></tr><tr><td><code>security</code></td><td>OWASP Top 10, Spring Security, JWT, validación de entrada, inyección, XSS/CSRF, seguridad a nivel de método, rate limiting, CORS, secretos, deserialización segura.</td></tr><tr><td><code>concurrency</code></td><td>Thread safety, race conditions, deadlocks, Virtual Threads, <code>CompletableFuture</code>, <code>@Async</code>.</td></tr><tr><td><code>performance-smells</code></td><td>Code smells de rendimiento a nivel de código: streams, colecciones, boxing, regex, creación de objetos (solo detección, no benchmarking).</td></tr><tr><td><code>observability</code></td><td>Logging estructurado con SLF4J/Logback, MDC para correlation IDs, métricas con Micrometer, tracing distribuido, health indicators, Actuator en producción.</td></tr><tr><td><code>testing</code></td><td>JUnit 5, Mockito, <code>@WebMvcTest</code>, <code>@DataJpaTest</code>, <code>@SpringBootTest</code>, Testcontainers, AssertJ, factorías de datos de test.</td></tr><tr><td><code>java-code-review</code></td><td>Checklist sistemática de revisión: null safety, manejo de excepciones, concurrencia, rendimiento.</td></tr></tbody></table></div>
+<h3 id="dev-java-knowledge-como-instalarlo">Cómo instalarlo</h3>
+<p>Desde Claude Code, instala el plugin <code>dev-java-knowledge</code> desde el marketplace interno <code>attrim-marketplace</code> (añade el marketplace si no lo tienes ya configurado y busca/instala el plugin por su nombre desde el listado de plugins disponibles).</p>
+<h3 id="dev-java-knowledge-como-usarlo">Cómo usarlo</h3>
+<ul><li><strong>Revisar un PR antes de fusionar:</strong> ejecuta <code>/java-review</code> sin argumentos en una rama con cambios pendientes. El agente <code>java-reviewer</code> ejecutará <code>git diff</code>/<code>git status</code> para acotar el alcance al cambio actual y devolverá un informe en secciones Crítico/Alto/Medio/Bajo/Buenas prácticas, sin modificar ningún archivo.</li><li><strong>Crear un feature nuevo:</strong> <code>/java-new-feature Gestión de pedidos con entidades Order y OrderLine</code>. El agente <code>java-architect</code> primero inspecciona el proyecto (<code>src/main/java</code>) para detectar si usa organización por capas o por feature, hace una pregunta a la vez para aclarar entidades/relaciones/autenticación, propone el árbol de directorios y espera confirmación antes de generar el esqueleto (controller, service, repository, entidad JPA, DTOs como records, mapper, excepciones de dominio con <code>TODO</code>).</li><li><strong>Escribir tests para una clase:</strong> <code>/java-test src/main/java/com/attrim/orders/OrderService.java</code>. El agente <code>java-test-writer</code> decide si corresponde un test unitario, un slice (<code>@WebMvcTest</code>/<code>@DataJpaTest</code>) o una integración con Testcontainers, escribe el test con JUnit 5 + AssertJ siguiendo AAA, lo ejecuta (<code>mvn test -Dtest=...</code>) y solo entrega si pasa.</li><li><strong>Auditoría de seguridad previa a release:</strong> <code>/java-security-audit</code> (sin argumentos audita todo el proyecto). El agente <code>java-security-auditor</code> recorre OWASP Top 10, secretos, autenticación/JWT, deserialización y dependencias, y entrega un informe con checklist de configuración de producción; no aplica ninguna corrección automáticamente.</li><li><strong>Pedir revisión SOLID de una clase puntual:</strong> también puedes invocar directamente <code>/java-refactor-solid src/main/java/com/attrim/billing/InvoiceCalculator.java</code> para obtener violaciones SOLID/clean code con propuesta de refactor (sin aplicarlo).</li><li>Las skills (<code>java-language</code>, <code>security</code>, <code>persistence</code>, etc.) no necesitan invocación explícita: se activan solas cuando la conversación o el código tocan su área (por ejemplo, pedir "revisa esta query JPA por N+1" activa <code>persistence</code> aunque no uses ningún comando).</li></ul>
+<h3 id="dev-java-knowledge-requisitos-configuracion-previa">Requisitos/configuración previa</h3>
+<ul><li>Proyecto Java/Spring Boot (Java 21 o 25) con Maven o Gradle; varios agentes ejecutan comandos de build/test (<code>mvn test</code>, <code>mvn dependency-check:check</code> o equivalentes Gradle) mediante la herramienta <code>Bash</code>, así que el entorno debe tener el proyecto en un estado compilable.</li><li><code>java-test-writer</code> asume disponibilidad de JUnit 5, AssertJ, Mockito y, para tests de integración, Testcontainers (Docker) en el proyecto o los añade si el proyecto ya sigue ese stack.</li><li>No hay <code>.mcp.json</code> ni configuración MCP en este plugin — no requiere servidores externos.</li></ul>
+<h3 id="dev-java-knowledge-notas-relevantes">Notas relevantes</h3>
+<ul><li>Los cuatro agentes (<code>java-reviewer</code>, <code>java-architect</code>, <code>java-test-writer</code>, <code>java-security-auditor</code>) están explícitamente delimitados en responsabilidades: <code>java-reviewer</code> y <code>java-security-auditor</code> <strong>nunca</strong> editan código, solo producen informes; <code>java-architect</code> solo escribe esqueleto (no lógica de negocio) y no escribe tests (delega a <code>java-test-writer</code>); <code>java-security-auditor</code> remite las correcciones a <code>java-reviewer</code> o a la sesión normal en vez de aplicarlas.</li><li><code>java-architect</code> sigue la convención de paquetes ya existente en el proyecto (por capas o por feature) en vez de imponer una preferencia propia; si el proyecto está vacío, recomienda <code>layered-feature-architecture</code> para dominios con más de 3-4 entidades relacionadas.</li><li>Según <code>plugin.json</code>, este plugin es el resultado de fusionar y deduplicar aportes de los equipos de Boris e Ivan.</li><li>Versión actual del plugin: <code>1.0.0</code>.</li></ul>
+        </div>
+      </article>
+
+      <article class="plugin" id="dev-mapbox-integration" data-category="dev">
+        <header class="plugin-header">
+          <h2>dev-mapbox-integration <span class="badge">v1.0.0</span></h2>
+          <p class="plugin-desc">Especialista en Mapbox GL JS para Angular (signals, OnPush): agente mapbox-architect + skill con patrones curados (capas/fuentes, clustering, dibujo de polígonos, estilos, geocoding) y comando /mapbox.</p>
+          <div class="keywords"><span class="kw">mapbox</span><span class="kw">angular</span><span class="kw">maps</span><span class="kw">geo</span></div>
+        </header>
+        <div class="plugin-body">
+          <p>Plugin de Claude Code especialista en <strong>Mapbox GL JS integrado en Angular</strong> (standalone, signals, <code>OnPush</code>): resuelve dudas de arquitectura, genera snippets y ayuda a depurar mapas, capas, clustering, dibujo de polígonos, estilos y geocoding.</p>
+<h3 id="dev-mapbox-integration-que-incluye">Qué incluye</h3>
+<ul><li><strong>Agente <code>mapbox-architect</code></strong> (<code>agents/mapbox-architect.md</code>) — especialista que responde preguntas de arquitectura, genera código y diagnostica problemas de Mapbox GL JS. Antes de responder, siempre lee la skill del plugin y decide si necesita <code>WebFetch</code> a la documentación oficial de Mapbox (docs.mapbox.com o los repos de <code>mapbox-gl-draw</code>/<code>mapbox-gl-geocoder</code>) para precisar firmas de método, opciones o tipos exactos. Nunca propone Zone.js, NgModules ni patrones deprecados de Angular; nunca hardcodea un access token; siempre destruye el mapa en <code>ngOnDestroy()</code> con <code>map.remove()</code>.</li><li><strong>Comando <code>/mapbox</code></strong> (<code>commands/mapbox.md</code>) — invoca al agente <code>mapbox-architect</code> con la pregunta indicada. Admite flags para acotar el contexto:</li><li><code>--layers</code> — capas y fuentes</li><li><code>--cluster</code> — clustering de marcadores</li><li><code>--draw</code> — dibujo de polígonos con <code>mapbox-gl-draw</code></li><li><code>--style</code> — estilos y expresiones</li><li><code>--geocode</code> — geocoding y búsqueda de lugares</li><li><code>--docs &lt;tema&gt;</code> — fuerza <code>WebFetch</code> a docs.mapbox.com antes de responder</li><li><code>--snippet &lt;feature&gt;</code> — responde solo con código, sin explicación</li><li><strong>Skill <code>mapbox-integration</code></strong> (<code>skills/mapbox-integration/SKILL.md</code>) — patrones canónicos curados que el agente consulta siempre antes de responder. Cubre:</li><li><strong>Capas y fuentes</strong>: <code>addSource</code>/<code>addLayer</code> (GeoJSON, vector, raster), tipos de capa (fill, line, circle, symbol), orden con <code>beforeId</code>, <code>setData()</code> en tiempo real, visibilidad y filtros dinámicos, eventos de interacción por capa.</li><li><strong>Clustering</strong>: clustering nativo de Mapbox GL (sin librería extra) con capas <code>clusters</code>, <code>cluster-count</code> y <code>unclustered-point</code>, y expansión de zoom con <code>getClusterExpansionZoom()</code>.</li><li><strong>Dibujo de polígonos</strong>: integración de <code>@mapbox/mapbox-gl-draw</code>, eventos <code>draw.create</code>/<code>draw.update</code>/<code>draw.delete</code> y su cableado a un componente Angular con <code>output()</code>.</li><li><strong>Estilos</strong>: estilos base oficiales (streets, light, dark, satellite, outdoors), cambio dinámico de estilo conservando capas propias, expresiones (<code>match</code>, <code>interpolate</code>, <code>step</code>, <code>case</code>).</li><li><strong>Geocoding</strong>: control <code>MapboxGeocoder</code> integrado en el mapa, reverse geocoding programático, e integración con formularios reactivos (<code>patchValue</code>).</li><li>Además incluye tipos comunes sugeridos y un ejemplo de mocks para tests (<code>vi.fn()</code>).</li></ul>
+<h3 id="dev-mapbox-integration-como-instalarlo">Cómo instalarlo</h3>
+<p>Instala este plugin desde el marketplace <code>attrim-marketplace</code> con el flujo habitual de plugins de Claude Code (comando <code>/plugin</code> o el mecanismo equivalente de tu versión de Claude Code), seleccionando <code>dev-mapbox-integration</code>.</p>
+<h3 id="dev-mapbox-integration-como-usarlo">Cómo usarlo</h3>
+<p><strong>1. Clustering de puntos con <code>/mapbox</code>:</strong></p>
+<pre><code>/mapbox --cluster ¿cómo agrupo 5000 marcadores de sucursales sin librería extra y expando el cluster al hacer click?</code></pre>
+<p>El agente responderá usando el patrón de clustering nativo de la skill (fuente GeoJSON con <code>cluster: true</code>, capas <code>clusters</code>/<code>cluster-count</code>/<code>unclustered-point</code> y <code>getClusterExpansionZoom()</code>), adaptado al servicio wrapper que ya exista en tu proyecto.</p>
+<p><strong>2. Dibujo de polígonos, pidiendo solo código:</strong></p>
+<pre><code>/mapbox --draw --snippet componente Angular standalone que permita dibujar una zona de cobertura y emita el GeoJSON del polígono con output()</code></pre>
+<p>Con <code>--snippet</code> la respuesta es solo código TypeScript tipado, sin explicación, basado en la integración de <code>@mapbox/mapbox-gl-draw</code> de la skill.</p>
+<p><strong>3. Petición en lenguaje natural que dispara al agente <code>mapbox-architect</code></strong> (sin usar <code>/mapbox</code> explícitamente, simplemente describiendo el problema):</p>
+<pre><code>Tengo un mapa Mapbox en un componente Angular con signals y necesito que al cambiar de estilo (streets → satellite) no se me borren las capas de zonas que dibujé yo. ¿Cómo lo hago sin duplicar código?</code></pre>
+<p>Claude Code puede delegar esta consulta al agente <code>mapbox-architect</code>, que consultará la skill (sección "Cambio dinámico de estilo conservando capas propias") y, si la pregunta requiere precisión de API, hará <code>WebFetch</code> a la documentación oficial antes de responder.</p>
+<p><strong>4. Forzar consulta a documentación oficial:</strong></p>
+<pre><code>/mapbox --docs expressions ¿qué diferencia hay entre "step" e "interpolate" para el color de un cluster por tamaño?</code></pre>
+<h3 id="dev-mapbox-integration-requisitos-configuracion-previa">Requisitos / configuración previa</h3>
+<ul><li>Proyecto <strong>Angular standalone</strong> con <strong>signals</strong> (<code>signal()</code>, <code>computed()</code>, <code>effect()</code>, <code>output()</code>) y componentes <strong><code>OnPush</code></strong> — el agente asume este estilo y no propone Zone.js, NgModules ni <code>@Input()</code>/<code>@Output()</code> clásicos.</li><li><strong>Access token de Mapbox</strong> disponible en la configuración de entorno del proyecto (p. ej. <code>environment.mapboxKey</code>) — el agente y la skill nunca lo hardcodean en un snippet ni leen ficheros <code>environment.*.ts</code> de producción para obtenerlo.</li><li>Para dibujo de polígonos: <code>@mapbox/mapbox-gl-draw</code> (+ <code>@types/mapbox__mapbox-gl-draw</code>).</li><li>Para geocoding con UI: <code>@mapbox/mapbox-gl-geocoder</code> (+ <code>@types/mapbox__mapbox-gl-geocoder</code>).</li><li>Tailwind (u otro sistema de estilos del proyecto) para el contenedor/wrapper del mapa — nunca estilos inline, según la convención asumida por el agente.</li></ul>
+<h3 id="dev-mapbox-integration-notas-relevantes">Notas relevantes</h3>
+<ul><li>La skill propone una convención de rutas de referencia (<code>src/app/core/services/mapbox.service.ts</code> para el servicio wrapper, <code>src/app/shared/ui/map/map.component.ts</code> para el componente reutilizable), pero tanto el agente como la skill insisten en que es solo un <strong>punto de partida</strong>: antes de aplicar cualquier patrón, hay que localizar con <code>Glob</code>/<code>Grep</code> si el proyecto ya tiene un servicio o componente equivalente y ampliarlo en vez de duplicarlo.</li><li>El agente tiene acceso a <code>Read</code>, <code>Glob</code>, <code>Grep</code> y <code>WebFetch</code> — puede inspeccionar el código real del proyecto y consultar documentación externa, pero no edita archivos directamente (no tiene <code>Edit</code>/<code>Write</code>); las respuestas son código sugerido para que el desarrollador lo aplique.</li><li>Reglas duras del agente que conviene conocer: nunca añade fuentes o capas fuera del evento <code>load</code> del mapa, nunca usa <code>(mapboxgl as any)</code> salvo necesidad absoluta y documentada, y ante preguntas ambiguas hace una única pregunta de aclaración antes de responder.</li></ul>
+        </div>
+      </article>
+
+      <article class="plugin" id="dev-statusline" data-category="dev">
+        <header class="plugin-header">
+          <h2>dev-statusline <span class="badge">v1.0.0</span></h2>
+          <p class="plugin-desc">Statusline personalizada para Claude Code con modelo, proyecto, rama git y barras de uso de contexto/rate-limits. Incluye el comando /instalar-statusline para activarla.</p>
+          <div class="keywords"><span class="kw">statusline</span><span class="kw">cli</span><span class="kw">productividad</span><span class="kw">settings</span></div>
+        </header>
+        <div class="plugin-body">
+          <p>Plugin de Claude Code que añade una statusline personalizada con el modelo activo, el proyecto, la rama git y el consumo de contexto y de rate-limits.</p>
+<h3 id="dev-statusline-que-incluye">Qué incluye</h3>
+<ul><li><strong>Comando <code>/instalar-statusline</code></strong> — activa la statusline editando el <code>settings.json</code> de Claude Code (global o de proyecto). Es un paso manual porque, según explica el propio comando, un plugin no puede fijar el <code>statusLine</code> principal solo con instalarse: Claude Code únicamente aplica en automático las claves <code>agent</code> y <code>subagentStatusLine</code> desde el <code>settings.json</code> de un plugin, así que hace falta este comando para escribir la clave <code>statusLine</code> de forma explícita.</li><li><strong>Script <code>scripts/statusline-command.js</code></strong> — un script Node (sin dependencias externas) que Claude Code invoca en cada actualización de la statusline. Lee por <code>stdin</code> el JSON de estado que le pasa Claude Code y construye una línea con colores ANSI que muestra:</li><li><strong>Modelo</strong>: nombre del modelo con un estilo/emoji distinto según sea Opus Plan/Max/Ultra (🧠✨, dorado), Opus (🟣), Sonnet (🤖) o Haiku (⚡); cualquier otro modelo se muestra en gris plano.</li><li><strong>Proyecto</strong>: nombre de la carpeta de trabajo actual (📁).</li><li><strong>Rama git</strong>: rama actual (🌿), obtenida con <code>git rev-parse --abbrev-ref HEAD</code>; si el directorio no es un repo git, este bloque simplemente no aparece.</li><li><strong>Uso de contexto</strong>: barra de 8 bloques (🧠) con el porcentaje de la ventana de contexto usada.</li><li><strong>Rate-limit de 5 horas</strong>: barra de 6 bloques (⏳) con el porcentaje consumido de la ventana de 5h.</li><li><strong>Rate-limit de 7 días</strong>: barra de 6 bloques (📅) con el porcentaje consumido de la ventana de 7d.</li></ul>
+<p>  Las tres barras cambian de color según el porcentaje: verde por debajo de 60%, amarillo entre 60% y 80%, rojo a partir de 80%.</p>
+<p>  Ejemplo de cómo se vería la línea resultante (colores omitidos, solo estructura):</p>
+<pre><code>  🤖 Sonnet 5 ❙ 📁 attrim-marketplace ❙ 🌿 main ★ ❙ 🧠 ██████░░ 62% ❙ ⏳ 5h ████░░ 58% ❙ 📅 7d ███░░░ 40%</code></pre>
+<h3 id="dev-statusline-como-instalarlo">Cómo instalarlo</h3>
+<ol><li>Instala el plugin <code>dev-statusline</code> desde el marketplace <code>attrim-marketplace</code> (con el flujo habitual de instalación de plugins de Claude Code para este marketplace).</li><li>Una vez instalado, ejecuta el comando <code>/instalar-statusline</code> dentro de Claude Code. Este comando es el que realmente activa la statusline — instalar el plugin por sí solo no la pone en marcha.</li></ol>
+<h3 id="dev-statusline-como-usarlo">Cómo usarlo</h3>
+<ol><li>Instala el plugin desde <code>attrim-marketplace</code>.</li><li>Ejecuta <code>/instalar-statusline</code>.</li><li>El comando te preguntará si quieres activarla <strong>globalmente</strong> (<code>~/.claude/settings.json</code>, afecta a todos tus proyectos) o <strong>solo para el proyecto actual</strong> (<code>.claude/settings.json</code> en la raíz del repo). Si no lo tienes claro, la recomendación por defecto es global.</li><li>Si el <code>settings.json</code> elegido no existe, el comando lo crea con <code>{}</code> como base. Si ya existía, preserva el resto del contenido y solo añade o actualiza la clave <code>statusLine</code>.</li><li>Si ya había una statusline configurada, el comando te avisa de cuál era antes de sobrescribirla y te pide confirmación.</li><li>El comando añade esta clave de nivel raíz al <code>settings.json</code>:</li></ol>
+<pre><code class="language-json">   "statusLine": {
+     "type": "command",
+     "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/statusline-command.js\"",
+     "padding": 2
+   }</code></pre>
+<p>   <code>${CLAUDE_PLUGIN_ROOT}</code> se deja literal — Claude Code lo resuelve en tiempo de ejecución a la carpeta donde quedó instalado este plugin.</p>
+<ol><li>La statusline nueva queda activa en la siguiente sesión de Claude Code (no hace falta reiniciar nada más, pero sí abrir una sesión nueva o recargar la actual si ya estaba en marcha).</li></ol>
+<h3 id="dev-statusline-requisitos-configuracion-previa">Requisitos / configuración previa</h3>
+<ul><li>Necesitas <strong>Node.js</strong> disponible en el <code>PATH</code>, ya que la statusline se ejecuta como <code>node scripts/statusline-command.js</code>.</li><li>Los bloques de rate-limit (5h y 7d) dependen de que Claude Code incluya <code>rate_limits.five_hour</code> / <code>rate_limits.seven_day</code> en el JSON que pasa al script; si no vienen, el script los trata como <code>0%</code> (no falla).</li><li>El bloque de rama git requiere que el directorio de trabajo sea un repositorio git con <code>git</code> disponible en el <code>PATH</code>; si no lo es, ese bloque desaparece sin dar error.</li></ul>
+<h3 id="dev-statusline-notas">Notas</h3>
+<ul><li>El comando <code>/instalar-statusline</code> <strong>modifica un archivo de configuración del usuario</strong> (<code>settings.json</code>, global o de proyecto), no solo archivos del propio plugin. Lo hace de forma explícita, pidiendo confirmación antes de sobrescribir una statusline previa y preservando el resto de claves existentes.</li><li>Es reversible: para desactivarla basta con borrar o cambiar manualmente la clave <code>statusLine</code> en el <code>settings.json</code> correspondiente, o volver a ejecutar <code>/instalar-statusline</code> para sustituirla por otra configuración.</li><li>Al desinstalar el plugin, la clave <code>statusLine</code> en <code>settings.json</code> no se elimina automáticamente (el comando solo actúa cuando se invoca) — si desinstalas el plugin conviene quitar también esa clave a mano, o la statusline dejará de funcionar porque <code>${CLAUDE_PLUGIN_ROOT}/scripts/statusline-command.js</code> ya no existirá.</li></ul>
+        </div>
+      </article>
+
+      <article class="plugin" id="dev-superarchitect" data-category="dev">
+        <header class="plugin-header">
+          <h2>dev-superarchitect <span class="badge">v1.0.0</span></h2>
+          <p class="plugin-desc">Comando /superarchitect: agente conversacional de arquitectura agnostico de stack (frontend o backend) que analiza como abordar un desarrollo, plantea alternativas y dudas al usuario, y nunca escribe codigo.</p>
+          <div class="keywords"><span class="kw">arquitectura</span><span class="kw">planificacion</span><span class="kw">diseno</span><span class="kw">adr</span><span class="kw">frontend</span><span class="kw">backend</span></div>
+        </header>
+        <div class="plugin-body">
+          <p>Plugin de Claude Code que añade el comando <code>/superarchitect</code>: un agente conversacional de arquitectura de software, agnóstico de stack (sirve tanto para frontend como para backend), que te ayuda a decidir <strong>cómo</strong> abordar un desarrollo antes de tocar código.</p>
+<h3 id="dev-superarchitect-que-incluye">Qué incluye</h3>
+<h4 id="dev-superarchitect-comando-superarchitect">Comando <code>/superarchitect</code></h4>
+<p>Argumento: una descripción del desarrollo a abordar o de la duda de implementación que tienes (<code>argument-hint: &lt;descripcion del desarrollo o duda de implementacion&gt;</code>).</p>
+<p>Herramientas permitidas: <code>Read</code>, <code>Glob</code>, <code>Grep</code>, <code>WebFetch</code>, <code>WebSearch</code> (no incluye <code>Edit</code> ni <code>Write</code>). Modelo configurado: <code>claude-opus-4-8</code>.</p>
+<p><strong>Qué hace:</strong></p>
+<ol><li><strong>Primero comprueba el contexto del proyecto.</strong> Busca un <code>CLAUDE.md</code> (en la raíz del repo o el más específico al directorio de trabajo) que describa el stack, la arquitectura y las convenciones. - Si existe y es útil, lo usa como fuente de verdad y evita asumir convenciones de "stacks típicos". - Si no existe o no dice nada útil, te lo dice explícitamente, te advierte de que sin ese contexto sus recomendaciones serán genéricas, y te sugiere ejecutar <code>/init</code> antes de continuar (si prefieres seguir sin él, respeta tu decisión pero deja constancia de la limitación).</li><li><strong>Razona de forma conversacional, no de una sola pasada:</strong> - Si tu planteamiento es ambiguo o falta un dato clave (alcance, volumen de datos, integraciones, restricciones de UX, etc.), hace <strong>una sola pregunta de aclaración a la vez</strong> (nunca una lista) y espera tu respuesta antes de seguir. - Explora el código existente con <code>Grep</code>/<code>Glob</code>/<code>Read</code> de forma dirigida (para confirmar patrones o convenciones), no como un barrido exploratorio completo del repo. - Compara de verdad varias alternativas de estructura (no solo detalles de sintaxis), y <strong>tiene opinión</strong>: recomienda una opción concreta y la defiende, en vez de dejarte toda la decisión a ti salvo que sea genuinamente una cuestión de preferencia de negocio/producto.</li><li><strong>Cuando propone una solución</strong>, sigue (sin forzarla en cada mensaje del hilo) esta estructura: - <strong>Contexto</strong> — qué ha entendido que se necesita y qué asunciones está haciendo. - <strong>Recomendación</strong> — la opción propuesta, explicada con claridad. - <strong>Alternativas descartadas</strong> — qué otras opciones consideró y por qué no, en el contexto concreto del proyecto. - <strong>Dudas / riesgos abiertos</strong> — preguntas de negocio, ambigüedades o riesgos técnicos (rendimiento, migraciones, compatibilidad) que tú debes sopesar.</li></ol>
+<p><strong>Qué NO hace (límites estrictos):</strong></p>
+<ul><li><strong>Nunca escribe ni modifica código de producción</strong>, ni siquiera "solo para ilustrar" — a lo sumo pseudocódigo de 2-3 líneas si es imprescindible para ilustrar una estructura de datos o un flujo.</li><li><strong>Nunca edita ni crea archivos.</strong> Su única salida es la conversación (no tiene acceso a <code>Edit</code>/<code>Write</code>).</li><li>Si le pides directamente que implemente algo, te recuerda que su rol es solo de planificación y te sugiere pasar la decisión ya tomada a tu sesión normal de desarrollo (o al agente/subagente de implementación que uses en ese proyecto).</li></ul>
+<h3 id="dev-superarchitect-como-instalarlo">Cómo instalarlo</h3>
+<p>Se instala como cualquier plugin del marketplace <code>attrim-marketplace</code> de Claude Code:</p>
+<pre><code>/plugin marketplace add attrim-marketplace
+/plugin install dev-superarchitect@attrim-marketplace</code></pre>
+<p>(o el mecanismo estándar de gestión de plugins de Claude Code, si ya tienes el marketplace añadido).</p>
+<h3 id="dev-superarchitect-como-usarlo">Cómo usarlo</h3>
+<p>Invoca el comando con una descripción del desarrollo o la duda que quieras analizar: <code>/superarchitect &lt;descripcion&gt;</code>.</p>
+<h4 id="dev-superarchitect-ejemplo-1-duda-de-frontend">Ejemplo 1 — Duda de frontend</h4>
+<pre><code>/superarchitect Necesito añadir un selector de idioma en el header de la app Angular, que persista la preferencia del usuario</code></pre>
+<p>El agente primero busca <code>CLAUDE.md</code> para confirmar el stack real (por ejemplo, Angular con signals, gestión de estado concreta, si ya existe i18n configurado). Si detecta ambigüedad —por ejemplo, si no está claro si la preferencia debe persistir solo en el navegador o también en el backend por usuario— te hará una única pregunta de aclaración antes de continuar. Después de explorar el código relevante con <code>Grep</code>/<code>Glob</code> (p. ej. cómo está montado el módulo de i18n actual), te presentará una recomendación concreta (dónde vive el componente, qué servicio gestiona la preferencia, cómo se persiste) junto con alternativas descartadas y los riesgos abiertos (por ejemplo, sincronización entre pestañas).</p>
+<h4 id="dev-superarchitect-ejemplo-2-duda-de-backend">Ejemplo 2 — Duda de backend</h4>
+<pre><code>/superarchitect Quiero exponer un endpoint que exporte informes en PDF de forma asíncrona porque tardan varios segundos en generarse</code></pre>
+<p>El agente comprobará las convenciones del backend documentadas en <code>CLAUDE.md</code> (framework, si ya hay un patrón de trabajos en background o colas). Comparará alternativas de estructura reales —por ejemplo, job en cola con notificación por webhook/polling frente a generación síncrona con streaming— y recomendará una con justificación, dejando como duda abierta aspectos como el tiempo de vida de los ficheros generados o el límite de tamaño aceptable.</p>
+<h4 id="dev-superarchitect-ejemplo-3-duda-de-diseno-general-sin-stack-definido-aun">Ejemplo 3 — Duda de diseño general, sin stack definido aún</h4>
+<pre><code>/superarchitect No sé si separar la lógica de facturación en un microservicio propio o dejarla dentro del monolito actual</code></pre>
+<p>Si el <code>CLAUDE.md</code> del proyecto no describe arquitectura ni convenciones útiles, el agente te lo dirá explícitamente y te sugerirá ejecutar <code>/init</code> antes de seguir, avisando de que si decides continuar sin ese contexto, la recomendación será genérica. A partir de ahí, puede pedirte una aclaración (por ejemplo, volumen de facturación esperado o necesidad de escalar de forma independiente) antes de comparar ambas opciones y posicionarse por una.</p>
+<p>En ningún caso el agente escribirá el código del selector de idioma, del endpoint o del microservicio — solo te entrega la decisión razonada para que la implementes tú (o el agente de desarrollo que uses) después.</p>
+<h3 id="dev-superarchitect-requisitos-configuracion-previa">Requisitos / configuración previa</h3>
+<ul><li>No requiere configuración de MCP ni variables de entorno adicionales.</li><li>Para obtener recomendaciones ajustadas al proyecto (y no genéricas), conviene tener un <code>CLAUDE.md</code> en la raíz del repo (o en el directorio relevante) que describa el stack, la arquitectura y las convenciones — si no existe, el propio comando te avisará y sugerirá <code>/init</code>.</li><li>El comando usa el modelo <code>claude-opus-4-8</code>; comprueba que tu configuración/plan de Claude Code tiene acceso a ese modelo.</li></ul>
+<h3 id="dev-superarchitect-notas-relevantes">Notas relevantes</h3>
+<ul><li>El plugin solo define este único comando (<code>commands/superarchitect.md</code>); no incluye agents, hooks, skills ni <code>.mcp.json</code>.</li><li>Las herramientas habilitadas (<code>Read</code>, <code>Glob</code>, <code>Grep</code>, <code>WebFetch</code>, <code>WebSearch</code>) permiten inspeccionar código y buscar información externa, pero deliberadamente excluyen <code>Edit</code>/<code>Write</code>/<code>Bash</code>, reforzando a nivel de configuración (no solo de instrucción) que el agente no puede modificar el repositorio.</li></ul>
+        </div>
+      </article></section>
+    <footer class="page-footer">
+      Documentación generada automáticamente con <code>scripts/build-wiki.js</code>. Para actualizarla tras cambiar un README, vuelve a ejecutar ese script.
+    </footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var STORAGE_KEY = "attrim-wiki-theme";
+  var root = document.documentElement;
+  var toggle = document.getElementById("theme-toggle");
+
+  function applyTheme(theme) {
+    if (theme === "dark" || theme === "light") {
+      root.setAttribute("data-theme", theme);
+    } else {
+      root.removeAttribute("data-theme");
+    }
+  }
+
+  var saved = null;
+  try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+  applyTheme(saved);
+
+  toggle.addEventListener("click", function () {
+    var current = root.getAttribute("data-theme");
+    var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var effectiveCurrent = current || (prefersDark ? "dark" : "light");
+    var next = effectiveCurrent === "dark" ? "light" : "dark";
+    applyTheme(next);
+    try { localStorage.setItem(STORAGE_KEY, next); } catch (e) {}
+  });
+
+  // Búsqueda: filtra la navegación por nombre/keywords/descripción.
+  var searchIndex = [{"id":"dev-angular-knowledge","name":"dev-angular-knowledge","category":"dev","text":"capacidad completa de desarrollo angular, en espanol: componentes, di, signals, forms, routing, http, testing, styling, tooling, creacion de proyectos nuevos, guardrails de calidad, separacion de responsabilidades en formularios complejos y registro de errores conocidos. incluye agentes de arquitectura, revision, tests y migracion. angular frontend signals typescript"},{"id":"dev-superarchitect","name":"dev-superarchitect","category":"dev","text":"comando /superarchitect: agente conversacional de arquitectura agnostico de stack (frontend o backend) que analiza como abordar un desarrollo, plantea alternativas y dudas al usuario, y nunca escribe codigo. arquitectura planificacion diseno adr frontend backend"},{"id":"dev-statusline","name":"dev-statusline","category":"dev","text":"statusline personalizada para claude code con modelo, proyecto, rama git y barras de uso de contexto/rate-limits. incluye el comando /instalar-statusline para activarla. statusline cli productividad settings"},{"id":"dev-java-knowledge","name":"dev-java-knowledge","category":"dev","text":"capacidad completa de desarrollo java/spring boot: lenguaje java 21/25, clean code, solid, patrones de diseno, arquitectura por features, api rest, persistencia jpa, manejo de errores, seguridad, concurrencia, rendimiento, observabilidad y testing. incluye agentes de revision, arquitectura, tests y auditoria de seguridad. java spring boot backend jpa testing seguridad"},{"id":"dev-dynamic-memory","name":"dev-dynamic-memory","category":"dev","text":"sistema de memoria dinamica por proyecto: puntos de guardado manuales /start y /wrap-up, /handoff para traspasar tareas entre miembros del equipo, y /memory-status y /memory-forget para inspeccionar y corregir la memoria a mano. memoria organizada por tipos (usuario, feedback, proyecto, referencias) con indice, snapshots de sesion y handoffs, local al proyecto y fuera de git. memoria contexto sesiones productividad"},{"id":"dev-agent-system-core","name":"dev-agent-system-core","category":"dev","text":"motor de sistema de agentes multi-rol con auto-aprendizaje: 7 agentes (architect, dev, tester, reviewer, debugger, evolver, wiki-saver), hooks de lint automatico, contexto y auto-evolucion al cerrar sesion, skills genericas (spec-driven-dev, debug-hypothesis, refactor, typescript-best-practices, playwright-best-practices) y sistema de wiki/knowledge-log por proyecto. ejecuta /agent-system-core:init en cada proyecto nuevo. agents self-learning workflow wiki"},{"id":"dev-agent-system-angular","name":"dev-agent-system-angular","category":"dev","text":"preset de stack angular 20+ / primeng / tailwind / ngrx signal store para dev-agent-system-core: reglas de arquitectura, feature-scaffolding, audit-module, sync-models, hu-refinement y mcp servers (angular-cli, primeng). requiere dev-agent-system-core. antes del primer uso hay que configurar la ruta del repo backend de commons y la clave del api gateway del proyecto (ver readme). angular primeng ngrx tailwind"},{"id":"dev-agent-system-dotnet","name":"dev-agent-system-dotnet","category":"dev","text":"preset .net / asp.net core para dev-agent-system-core: reglas de arquitectura (capas+módulos, ef core, jwt/keycloak, manejo de errores), skills de scaffolding/auditoría/migraciones/pre-commit, y errores aprendidos semilla. requiere dev-agent-system-core. antes del primer uso hay que sustituir los placeholders de proyecto (namespace raíz, proyectos, providers externos, esquemas jwt, puertos) — ver readme. dotnet aspnetcore efcore csharp"},{"id":"dev-explain-branch","name":"dev-explain-branch","category":"dev","text":"genera la descripción de una merge/pull request a partir del diff de la rama actual, filtrando lo que de verdad le importa a un reviewer. agnóstico de stack. opcionalmente (--azure=<id>) publica además un resumen técnico como comentario en un work item de azure devops, previa confirmación explícita. el modo azure requiere configurar azure_org/azure_project/azure_pat. git merge-request code-review azure-devops"},{"id":"dev-mapbox-integration","name":"dev-mapbox-integration","category":"dev","text":"especialista en mapbox gl js para angular (signals, onpush): agente mapbox-architect + skill con patrones curados (capas/fuentes, clustering, dibujo de polígonos, estilos, geocoding) y comando /mapbox. mapbox angular maps geo"},{"id":"dev-claude-config-audit","name":"dev-claude-config-audit","category":"dev","text":"comando /claude-analisis: audita la configuración de claude code (proyecto/máquina/ambos) y da un informe con nota 1-10 (seguridad, estructura, ajuste al stack) y sugerencias de plugins del marketplace que cubrirían huecos detectados. solo lee y reporta, nunca modifica nada. claude-code auditoria seguridad configuracion"},{"id":"dev-agent-system-java","name":"dev-agent-system-java","category":"dev","text":"preset java / spring boot para dev-agent-system-core: arquitectura de dos paquetes (librería compartida + proyecto), manejo de errores con jerarquía + i18n, seguridad (keycloak/oauth2, multi-tenancy, filtrado por usuario), persistencia jpa/specification, skills de scaffolding/auditoría/tests-gated-por-spec, y errores aprendidos semilla. requiere dev-agent-system-core. antes del primer uso hay que sustituir los placeholders de proyecto (paquetes, ruta del repo de commons, tracker de trabajo) — ver readme. java spring-boot jpa hibernate"}];
+  var searchBox = document.getElementById("search");
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll(".nav-group a[data-nav]"));
+
+  searchBox.addEventListener("input", function () {
+    var q = searchBox.value.trim().toLowerCase();
+    navLinks.forEach(function (link) {
+      var id = link.getAttribute("data-nav");
+      var entry = searchIndex.filter(function (e) { return e.id === id; })[0];
+      var match = !q || (entry && (entry.name.toLowerCase().indexOf(q) !== -1 || entry.text.indexOf(q) !== -1));
+      link.parentElement.classList.toggle("hidden", !match);
+    });
+  });
+
+  // Resalta en la nav el plugin visible mientras se hace scroll.
+  var sections = Array.prototype.slice.call(document.querySelectorAll("article.plugin"));
+  if ("IntersectionObserver" in window && sections.length) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        var link = document.querySelector('.nav-group a[data-nav="' + entry.target.id + '"]');
+        if (!link) return;
+        if (entry.isIntersecting) {
+          navLinks.forEach(function (l) { l.classList.remove("active"); });
+          link.classList.add("active");
+        }
+      });
+    }, { rootMargin: "-10% 0px -70% 0px" });
+    sections.forEach(function (s) { observer.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "dev-dynamic-memory",
+  "version": "1.0.0",
+  "description": "Sistema de memoria dinamica por proyecto para Claude Code: puntos de guardado manuales (/start, /wrap-up), /handoff para traspasar tareas entre miembros del equipo, y /memory-status y /memory-forget para inspeccionar y corregir la memoria a mano. Memoria organizada por tipos (usuario, feedback, proyecto, referencias), con indice, snapshots de sesion y handoffs, todo local al proyecto y fuera de git.",
+  "author": {
+    "name": "Alejandro Roca"
+  }
+}

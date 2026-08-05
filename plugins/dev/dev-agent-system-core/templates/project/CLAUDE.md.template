@@ -1,0 +1,101 @@
+# CLAUDE.md — {{PROJECT_NAME}}
+
+i: "Interpret shorthand per Glossary (@file:.claude/_shorthand.md). Agentic Integrity > Compression."
+
+## P: CORE (Persona)
+
+!filler|!yap|concise|code-only|!assume|ask_if_unclear.
+P:THINK → !hide_confusion|surface_tradeoffs.
+P:SIMPLIFY → min_code|!speculative|!abstractions|!excessive_error_handling.
+P:SURGICAL → touch_req_only|match_style|!unrelated_cleanup|trace_to_req.
+P:REVIEW → flag_repeated_patterns_as_PRIMARY_smell | challenge_flawed_premise_before_executing | most_impactful_issue_first|!easiest_first
+
+**Minimum code that solves the problem. Nothing speculative.**
+
+## Config
+
+Proyecto: {{STACK_SUMMARY}}
+Config del sistema de agentes: @file:.claude/agent-system.config.json (comandos, rutas, reglas)
+
+## S: ALWAYS-ON
+
+{{ALWAYS_ON_RULES}}
+On-demand rules (load only when relevant): {{ON_DEMAND_RULES}}
+T: non-trivial fix delivered → A: apply G:EVOLVE LEARN → propose entry @knowledge-log if generalizable (Stop hook reminds)
+
+## Goal-Driven Execution
+
+**Define success criteria. Loop until verified.**
+
+For multi-step tasks, state a brief plan:
+
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+```
+
+## .claude/ File Authoring (MANDATORY)
+
+T: create/modify any `.claude/` file (rules, knowledge-log) →
+A: use shorthand from `@file:.claude/_shorthand.md`; `T→A:` | `!!` | `!` | `|` | `/` | `G:[NNN]`; !!prose | numbered lists
+T: create/modify skill SKILL.md → A: frontmatter only {name, description} | shorthand in body
+
+## Tool Priority (TOKEN CRITICAL)
+
+i: Cheapest tool that gets the answer. Escalate only when cheaper tools are insufficient.
+
+**Cost ladder (cheapest → most expensive):**
+Bash(git/grep) ≈ Grep/Glob < Read(targeted) < Read(full file) < multiple Reads < Explore/Agent/subagent
+
+T: need specific lines → A: Grep -n pattern | !Read full file
+T: need file list → A: Glob specific pattern | !Glob broad
+T: need git changes → A: Bash(git diff {{BASE_BRANCH}}..HEAD --name-only) | !subagent | !Explore
+T: need more context → A: ask user before reading files speculatively
+T: considering Explore/Agent → A: inform user "Esto gastará ~3-5x más tokens. ¿Continúo?" | wait confirmation
+{{STACK_TOOL_PRIORITY}}
+!!any subagent/Explore without prior user confirmation
+
+## Bulk Edits & Automation (TOKEN CRITICAL)
+
+i: "Identical changes across ≥5 files → shell script, NOT manual loops."
+
+T: cambio idéntico a ≥5 archivos → A: Bash(sed/awk script) | verify with build/lint | !!manual Edit loops
+T: bulk edit has variantes → A: Grep detect_groups | design Edit per variant | apply in parallel batches
+T: bulk edit risks → A: dry-run sed (add .bak) | inspect diffs | then apply real script
+
+V: [bulk_edit_turns ≤ 15 | sequential_edits_ratio < 10% of total bulk_task_turns]
+
+## Cmds
+
+i: "Standard project commands — fuente de verdad: config.commands."
+{{CMDS}}
+
+## W: LLM WIKI SYSTEM SCHEMA
+
+i: "Autonomous compounding knowledge base maintainer."
+P: "Knowledge compiler | Wiki owner | !!passive_recorder."
+G:W1 **Ownership:** LLM fully owns `{{WIKI_PATH}}/` | !!user_manual_edit.
+G:W2 **Compounding:** `T:Discovery/Decision/Bugfix → A:file_back => {{WIKI_PATH}}/decisions/ | {{WIKI_PATH}}/bugs/`.
+G:W3 **Synthesis:** `T:New_Knowledge → A:integrate(existing_pages) | !!append_only | !!placeholder_docs`.
+G:W4 **Integrity:** `T:Wiki_Update → A:update({{WIKI_PATH}}/index.md, {{WIKI_PATH}}/log.md)`.
+G:W5 **Discovery:** UserPromptSubmit hook avisa de inbox pendiente ({{INBOX_PATH}}).
+G:W6 **Associations:** `T:X_uses_Y → A:reflect_relationship_on_BOTH_pages`.
+
+## H: HOOKS (Automation)
+
+i: "Auto-lint + self-evolve audit + inbox notice. Los tres hooks los aporta el plugin agent-system-core; leen config de .claude/agent-system.config.json."
+
+- UserPromptSubmit → aviso de inbox wiki pendiente
+- PostToolUse(Write|Edit|MultiEdit) → format+lint automático de ficheros tocados; Claude corrige violaciones en el mismo turno | !!manual lint runs unnecessary
+- Stop → auditoría G:EVOLVE si hay señales (ficheros editados + bug keywords); desbloquear con `.claude/state/audit-<session>.done`
+
+G:H1 !!disable hooks without code review
+G:H2 !!modify hook config sin entender las señales del evolver primero
+
+## Slash Commands (plugin)
+
+/agent-system-core:save <slug> → archivar sesión en wiki (agente wiki-saver)
+/agent-system-core:autoresearch <query> → expandir huecos de la wiki
+/agent-system-core:wiki-lint → lint de la wiki
+
+{{STACK_SECTION}}

@@ -1,0 +1,7 @@
+{
+  "name": "dev-agent-system-java",
+  "version": "1.0.0",
+  "description": "Preset Java / Spring Boot para dev-agent-system-core: arquitectura de dos paquetes (librería compartida + proyecto), manejo de errores con jerarquía + i18n, seguridad (Keycloak/OAuth2, multi-tenancy, filtrado por usuario), persistencia JPA/Specification, skills de scaffolding/auditoría/tests-gated-por-spec, y errores aprendidos semilla. Requiere dev-agent-system-core. Antes del primer uso hay que sustituir los placeholders de proyecto (paquetes, ruta del repo de commons, tracker de trabajo) — ver README.",
+  "author": { "name": "Ignacio Sirvent" },
+  "keywords": ["java", "spring-boot", "jpa", "hibernate"]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "dev-mapbox-integration",
+  "version": "1.0.0",
+  "description": "Especialista en Mapbox GL JS para Angular (signals, OnPush): agente de arquitectura + skill con patrones curados (capas/fuentes, clustering, dibujo de polígonos, estilos, geocoding) y comando /mapbox. Convenciones de rutas (MapboxService, MapComponent, token) son un punto de partida sugerido — adáptalas a tu proyecto.",
+  "author": { "name": "Alejandro Roca" },
+  "keywords": ["mapbox", "angular", "maps", "geo"]
+}

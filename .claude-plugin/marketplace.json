@@ -1,0 +1,110 @@
+{
+  "name": "attrim-dev-skills",
+  "owner": {
+    "name": "Attrim",
+    "email": "administracion@attrim.com"
+  },
+  "metadata": {
+    "description": "Marketplace público de plugins de Claude Code del equipo de desarrollo de Attrim."
+  },
+  "plugins": [
+    {
+      "name": "dev-angular-knowledge",
+      "source": "./plugins/dev/dev-angular-knowledge",
+      "description": "Capacidad completa de desarrollo Angular, en espanol: componentes, DI, signals, forms, routing, HTTP, testing, styling, tooling, creacion de proyectos nuevos, guardrails de calidad, separacion de responsabilidades en formularios complejos y registro de errores conocidos. Incluye agentes de arquitectura, revision, tests y migracion.",
+      "category": "dev",
+      "keywords": ["angular", "frontend", "signals", "typescript"]
+    },
+    {
+      "name": "dev-superarchitect",
+      "source": "./plugins/dev/dev-superarchitect",
+      "description": "Comando /superarchitect: agente conversacional de arquitectura agnostico de stack (frontend o backend) que analiza como abordar un desarrollo, plantea alternativas y dudas al usuario, y nunca escribe codigo.",
+      "category": "dev",
+      "keywords": [
+        "arquitectura",
+        "planificacion",
+        "diseno",
+        "adr",
+        "frontend",
+        "backend"
+      ]
+    },
+    {
+      "name": "dev-statusline",
+      "source": "./plugins/dev/dev-statusline",
+      "description": "Statusline personalizada para Claude Code con modelo, proyecto, rama git y barras de uso de contexto/rate-limits. Incluye el comando /instalar-statusline para activarla.",
+      "category": "dev",
+      "keywords": ["statusline", "cli", "productividad", "settings"]
+    },
+    {
+      "name": "dev-java-knowledge",
+      "source": "./plugins/dev/dev-java-knowledge",
+      "description": "Capacidad completa de desarrollo Java/Spring Boot: lenguaje Java 21/25, clean code, SOLID, patrones de diseno, arquitectura por features, API REST, persistencia JPA, manejo de errores, seguridad, concurrencia, rendimiento, observabilidad y testing. Incluye agentes de revision, arquitectura, tests y auditoria de seguridad.",
+      "category": "dev",
+      "keywords": [
+        "java",
+        "spring boot",
+        "backend",
+        "jpa",
+        "testing",
+        "seguridad"
+      ]
+    },
+    {
+      "name": "dev-dynamic-memory",
+      "source": "./plugins/dev/dev-dynamic-memory",
+      "description": "Sistema de memoria dinamica por proyecto: puntos de guardado manuales /start y /wrap-up, /handoff para traspasar tareas entre miembros del equipo, y /memory-status y /memory-forget para inspeccionar y corregir la memoria a mano. Memoria organizada por tipos (usuario, feedback, proyecto, referencias) con indice, snapshots de sesion y handoffs, local al proyecto y fuera de git.",
+      "category": "dev",
+      "keywords": ["memoria", "contexto", "sesiones", "productividad"]
+    },
+    {
+      "name": "dev-agent-system-core",
+      "source": "./plugins/dev/dev-agent-system-core",
+      "description": "Motor de sistema de agentes multi-rol con auto-aprendizaje: 7 agentes (architect, dev, tester, reviewer, debugger, evolver, wiki-saver), hooks de lint automatico, contexto y auto-evolucion al cerrar sesion, skills genericas (spec-driven-dev, debug-hypothesis, refactor, typescript-best-practices, playwright-best-practices) y sistema de wiki/knowledge-log por proyecto. Ejecuta /agent-system-core:init en cada proyecto nuevo.",
+      "category": "dev",
+      "keywords": ["agents", "self-learning", "workflow", "wiki"]
+    },
+    {
+      "name": "dev-agent-system-angular",
+      "source": "./plugins/dev/dev-agent-system-angular",
+      "description": "Preset de stack Angular 20+ / PrimeNG / Tailwind / NgRx Signal Store para dev-agent-system-core: reglas de arquitectura, feature-scaffolding, audit-module, sync-models, hu-refinement y MCP servers (angular-cli, primeng). Requiere dev-agent-system-core. Antes del primer uso hay que configurar la ruta del repo backend de commons y la clave del API gateway del proyecto (ver README).",
+      "category": "dev",
+      "keywords": ["angular", "primeng", "ngrx", "tailwind"]
+    },
+    {
+      "name": "dev-agent-system-dotnet",
+      "source": "./plugins/dev/dev-agent-system-dotnet",
+      "description": "Preset .NET / ASP.NET Core para dev-agent-system-core: reglas de arquitectura (capas+módulos, EF Core, JWT/Keycloak, manejo de errores), skills de scaffolding/auditoría/migraciones/pre-commit, y errores aprendidos semilla. Requiere dev-agent-system-core. Antes del primer uso hay que sustituir los placeholders de proyecto (namespace raíz, proyectos, providers externos, esquemas JWT, puertos) — ver README.",
+      "category": "dev",
+      "keywords": ["dotnet", "aspnetcore", "efcore", "csharp"]
+    },
+    {
+      "name": "dev-explain-branch",
+      "source": "./plugins/dev/dev-explain-branch",
+      "description": "Genera la descripción de una Merge/Pull Request a partir del diff de la rama actual, filtrando lo que de verdad le importa a un reviewer. Agnóstico de stack. Opcionalmente (--azure=<ID>) publica además un resumen técnico como comentario en un work item de Azure DevOps, previa confirmación explícita. El modo Azure requiere configurar AZURE_ORG/AZURE_PROJECT/AZURE_PAT.",
+      "category": "dev",
+      "keywords": ["git", "merge-request", "code-review", "azure-devops"]
+    },
+    {
+      "name": "dev-mapbox-integration",
+      "source": "./plugins/dev/dev-mapbox-integration",
+      "description": "Especialista en Mapbox GL JS para Angular (signals, OnPush): agente mapbox-architect + skill con patrones curados (capas/fuentes, clustering, dibujo de polígonos, estilos, geocoding) y comando /mapbox.",
+      "category": "dev",
+      "keywords": ["mapbox", "angular", "maps", "geo"]
+    },
+    {
+      "name": "dev-claude-config-audit",
+      "source": "./plugins/dev/dev-claude-config-audit",
+      "description": "Comando /claude-analisis: audita la configuración de Claude Code (proyecto/máquina/ambos) y da un informe con nota 1-10 (seguridad, estructura, ajuste al stack) y sugerencias de plugins del marketplace que cubrirían huecos detectados. Solo lee y reporta, nunca modifica nada.",
+      "category": "dev",
+      "keywords": ["claude-code", "auditoria", "seguridad", "configuracion"]
+    },
+    {
+      "name": "dev-agent-system-java",
+      "source": "./plugins/dev/dev-agent-system-java",
+      "description": "Preset Java / Spring Boot para dev-agent-system-core: arquitectura de dos paquetes (librería compartida + proyecto), manejo de errores con jerarquía + i18n, seguridad (Keycloak/OAuth2, multi-tenancy, filtrado por usuario), persistencia JPA/Specification, skills de scaffolding/auditoría/tests-gated-por-spec, y errores aprendidos semilla. Requiere dev-agent-system-core. Antes del primer uso hay que sustituir los placeholders de proyecto (paquetes, ruta del repo de commons, tracker de trabajo) — ver README.",
+      "category": "dev",
+      "keywords": ["java", "spring-boot", "jpa", "hibernate"]
+    }
+  ]
+}

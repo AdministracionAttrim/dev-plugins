@@ -1,0 +1,106 @@
+{
+  "huId": "HU-1234",
+  "entitySingular": "Zone",
+  "entityPlural": "zones",
+  "featureName": "zones",
+  "moduleSrcPath": "master-data/configuration",
+  "pagesKey": "ZONES",
+  "entitiesKey": "ZONES",
+  "backendBaseUrl": "${environment.apiGw.myservice.url}/zone",
+  "softDelete": true,
+  "activeEntityRouting": true,
+  "entityStatus": {
+    "activeField": "creationDate",
+    "inactiveField": "deletionDate"
+  },
+  "permissions": {
+    "LIST":   "ZONE_LIST",
+    "DETAIL": "ZONE_DETAIL",
+    "CREATE": "ZONE_CREATE",
+    "UPDATE": "ZONE_UPDATE",
+    "DELETE": "ZONE_DELETE",
+    "extras": []
+  },
+  "fields": [
+    {
+      "name": "supply",
+      "type": "SupplySearch",
+      "fkEntity": "SupplySearch",
+      "required": true,
+      "inSearch": true,
+      "labelEs": "Abastecimiento",
+      "labelEn": "Supply",
+      "selector": "app-supply-selector"
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "required": true,
+      "inSearch": true,
+      "labelEs": "Nombre",
+      "labelEn": "Name",
+      "maxLength": 100
+    },
+    {
+      "name": "externalCode",
+      "type": "string",
+      "required": true,
+      "inSearch": true,
+      "labelEs": "Código externo",
+      "labelEn": "External code",
+      "maxLength": 50
+    },
+    {
+      "name": "periodicity",
+      "type": "Periodicity",
+      "fkEntity": "Periodicity",
+      "required": true,
+      "inSearch": true,
+      "labelEs": "Periodicidad",
+      "labelEn": "Periodicity"
+    }
+  ],
+  "formSplit": "simple",
+  "filterFieldName": "name",
+  "translocoScope": "zones",
+  "i18nPath": "master-data/configuration",
+  "parentRoutesFile": "src/app/modules/master-data/configuration/configuration.routes.ts",
+  "menuGroup": "configuration",
+  "tabs": [
+    {
+      "label": "basicData",
+      "titleEs": "Datos básicos",
+      "titleEn": "Basic data",
+      "sections": [
+        {
+          "key": "supply",
+          "icon": "fa-duotone fa-regular fa-tank-water text-primary",
+          "titleEs": "Abastecimiento",
+          "titleEn": "Supply",
+          "descriptionEs": "La zona a crear será vinculada al siguiente abastecimiento.",
+          "descriptionEn": "The zone will be linked to the following supply."
+        },
+        {
+          "key": "identification",
+          "icon": "fa-duotone fa-regular fa-map-location-dot text-lime-700",
+          "titleEs": "Identificación de zona",
+          "titleEn": "Zone identification",
+          "descriptionEs": "Introduce un nombre claro y representativo para la zona.",
+          "descriptionEn": "Enter a clear and representative name for the zone."
+        },
+        {
+          "key": "periodicity",
+          "icon": "fa-duotone fa-regular fa-calendar-days text-orange-600",
+          "titleEs": "Periodicidad de facturación",
+          "titleEn": "Billing periodicity",
+          "descriptionEs": "Solo se permiten aquellas definidas previamente en el abastecimiento.",
+          "descriptionEn": "Only periodicities previously defined in the supply are allowed."
+        }
+      ]
+    }
+  ],
+  "ui": {
+    "layout": "standard",
+    "hasExport": false
+  }
+}

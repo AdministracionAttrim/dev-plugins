@@ -1,0 +1,7 @@
+{
+  "name": "dev-agent-system-core",
+  "version": "1.0.0",
+  "description": "Motor de sistema de agentes multi-rol con auto-aprendizaje. Agnóstico de stack: toda configuración específica del proyecto vive en .claude/agent-system.config.json (generado por /agent-system-core:init).",
+  "author": { "name": "Pablo Miguel Argudo" },
+  "keywords": ["agents", "self-learning", "hooks", "wiki"]
+}

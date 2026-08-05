@@ -1,0 +1,8 @@
+{
+  "name": "dev-superarchitect",
+  "version": "1.0.0",
+  "description": "Comando /superarchitect: agente conversacional de arquitectura, agnostico de stack (frontend o backend), que analiza como abordar un desarrollo, plantea alternativas y dudas al usuario, y nunca escribe codigo.",
+  "author": {
+    "name": "Attrim - equipo dev"
+  }
+}

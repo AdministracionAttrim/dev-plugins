@@ -1,0 +1,7 @@
+{
+  "name": "dev-claude-config-audit",
+  "version": "1.0.0",
+  "description": "Comando /claude-analisis: audita la configuración de Claude Code (del proyecto actual, de la máquina, o ambos) y da un informe con nota 1-10 (seguridad, estructura, ajuste al stack) y sugerencias de plugins del marketplace Attrim que cubrirían huecos detectados. Solo lee y reporta, nunca modifica nada.",
+  "author": { "name": "Attrim" },
+  "keywords": ["claude-code", "auditoria", "seguridad", "configuracion"]
+}

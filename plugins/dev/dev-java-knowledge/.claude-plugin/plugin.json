@@ -1,0 +1,8 @@
+{
+  "name": "dev-java-knowledge",
+  "version": "1.0.0",
+  "description": "Capacidad completa de desarrollo Java/Spring Boot para Claude Code: lenguaje Java 21/25, clean code, SOLID, patrones de diseno, arquitectura por features, API REST, persistencia JPA, manejo de errores, seguridad, concurrencia, rendimiento, observabilidad y testing. Agentes de revision, arquitectura, tests y auditoria de seguridad incluidos. Aportado por los equipos de Boris e Ivan, fusionado y deduplicado.",
+  "author": {
+    "name": "Attrim - equipo dev"
+  }
+}
