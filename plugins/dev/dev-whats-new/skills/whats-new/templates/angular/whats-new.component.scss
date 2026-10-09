@@ -1,0 +1,163 @@
+// ADAPTAR: mapear las --wn-* a los tokens semánticos del proyecto (claro/oscuro) en
+// lugar de los valores por defecto, o sustituir clases por las del kit de UI.
+:host {
+  --wn-surface: var(--color-surface, #ffffff);
+  --wn-text: var(--color-text, #1f2430);
+  --wn-muted: var(--color-text-muted, #5b6474);
+  --wn-border: var(--color-border, #e3e6ec);
+  --wn-primary: var(--color-primary, #2f5bea);
+  --wn-primary-text: var(--color-primary-contrast, #ffffff);
+  --wn-dot: var(--color-border-strong, #c9cfda);
+  --wn-hero-from: var(--color-primary, #2f5bea);
+  --wn-hero-to: var(--color-accent, #7a4de8);
+  --wn-radius: 16px;
+}
+
+.wn {
+  width: min(480px, calc(100vw - 32px));
+  padding: 0;
+  border: 1px solid var(--wn-border);
+  border-radius: var(--wn-radius);
+  background: var(--wn-surface);
+  color: var(--wn-text);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 0.25);
+  overflow: hidden;
+
+  &::backdrop {
+    background: rgb(15 18 25 / 0.55);
+  }
+
+  // Con vídeo en la versión: más ancho para que la interfaz grabada se lea.
+  &.wn--wide {
+    width: min(640px, calc(100vw - 32px));
+  }
+}
+
+.wn__hero {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(135deg, var(--wn-hero-from), var(--wn-hero-to));
+
+  img,
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.wn__icon {
+  width: 72px;
+  height: 72px;
+}
+
+.wn__content {
+  padding: 20px 24px 8px;
+  min-height: 9.5rem;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: wn-in 180ms ease-out;
+  }
+}
+
+.wn__eyebrow {
+  margin: 0 0 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--wn-muted);
+}
+
+.wn__title {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.wn__body {
+  margin: 0 0 12px;
+  line-height: 1.5;
+  color: var(--wn-muted);
+}
+
+.wn__more {
+  color: var(--wn-primary);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.wn__footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px 20px;
+}
+
+.wn__dots {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  gap: 6px;
+}
+
+.wn__dot {
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--wn-dot);
+  cursor: pointer;
+
+  &[aria-current='true'] {
+    width: 20px;
+    background: var(--wn-primary);
+  }
+}
+
+.wn__btn {
+  font: inherit;
+  padding: 8px 16px;
+  border: 1px solid var(--wn-border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--wn-text);
+  cursor: pointer;
+
+  &--primary {
+    background: var(--wn-primary);
+    border-color: var(--wn-primary);
+    color: var(--wn-primary-text);
+    font-weight: 600;
+  }
+
+  &--ghost {
+    border-color: transparent;
+    color: var(--wn-muted);
+  }
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--wn-primary);
+  outline-offset: 2px;
+}
+
+@keyframes wn-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

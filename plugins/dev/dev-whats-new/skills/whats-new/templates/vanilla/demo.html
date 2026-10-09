@@ -1,0 +1,34 @@
+<!doctype html>
+<!--
+  Demo local del web component. Sírvelo por HTTP (los módulos ES no cargan con file://):
+    npx serve .   o   python -m http.server
+  y abre /demo.html. "Reiniciar" borra la marca de visto.
+-->
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>whats-new · demo</title>
+  <style>body { font-family: system-ui, sans-serif; padding: 2rem; } button { margin-right: .5rem; }</style>
+</head>
+<body>
+  <h1>whats-new · demo</h1>
+  <p>
+    <button id="reset" type="button">Reiniciar y recargar</button>
+    <button id="history" type="button">Ver novedades otra vez</button>
+    <label><input id="perm" type="checkbox" checked> Tiene permiso DEMO.ADMIN</label>
+  </p>
+  <script type="module">
+    import { initWhatsNew, showWhatsNew } from "./whats-new.js";
+
+    const STORAGE_KEY = "demo.whatsNew";
+    const canSee = (permit) => permit !== "DEMO.ADMIN" || document.getElementById("perm").checked;
+    const options = { url: "./whats-new.example.json", currentVersion: "1.2.0-SNAPSHOT", storageKey: STORAGE_KEY, canSee, onNavigate: (link) => (location.hash = link.route) };
+    const example = await (await fetch(options.url)).json();
+    initWhatsNew(options).then((r) => console.log("whats-new:", r));
+
+    document.getElementById("reset").onclick = () => { localStorage.removeItem(STORAGE_KEY); location.reload(); };
+    document.getElementById("history").onclick = () => showWhatsNew(example.releases[0], options);
+  </script>
+</body>
+</html>
