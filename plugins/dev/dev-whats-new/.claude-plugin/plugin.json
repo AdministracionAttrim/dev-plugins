@@ -1,0 +1,7 @@
+{
+  "name": "dev-whats-new",
+  "version": "1.0.0",
+  "description": "Novedades por versión para usuario final: /whats-new-release resume los commits entre el tag anterior y la rama de release en las 3 novedades principales (whats-new.json validado contra schema) y /whats-new-setup instala en el proyecto un carrusel modal que cada usuario ve una sola vez por versión (plantillas Angular y web component vanilla). Opcional: /whats-new-video graba un vídeo corto de la app real (capturas en local + HyperFrames) para la cabecera de cada novedad.",
+  "author": { "name": "Alejandro Antolín" },
+  "keywords": ["release", "changelog", "onboarding", "novedades"]
+}

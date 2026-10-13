@@ -1,0 +1,64 @@
+@if (release(); as rel) {
+  <dialog #dialog class="wn" [class.wn--wide]="hasVideo()" aria-labelledby="wn-title" (cancel)="onCancel($event)" (keydown)="onKeydown($event)">
+    @if (item(); as it) {
+      <div class="wn__hero">
+        @if (it.video && it.image && !reducedMotion) {
+          <!-- muted se fija también en (canplay): Angular no siempre deja el atributo en el DOM y sin él no hay autoplay. -->
+          <video #video [src]="imageSrc(it.video)" [poster]="imageSrc(it.image)" [attr.aria-label]="text(it.imageAlt)"
+            muted autoplay loop playsinline preload="auto" (canplay)="playMuted(video)"></video>
+        } @else if (it.image) {
+          <img [src]="imageSrc(it.image)" [alt]="text(it.imageAlt)" />
+        } @else {
+          <!-- ADAPTAR: icono del proyecto según it.icon (p. ej. <lucide-icon [name]="it.icon" />) -->
+          <svg class="wn__icon" [attr.data-icon]="it.icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z" />
+            <path d="M19 15l.8 1.9 1.9.8-1.9.8L19 20.4l-.8-1.9-1.9-.8 1.9-.8z" />
+            <path d="M5 3.5l.6 1.4 1.4.6-1.4.6L5 7.5l-.6-1.4L3 5.5l1.4-.6z" />
+          </svg>
+        }
+      </div>
+
+      <div class="wn__content" aria-live="polite">
+        <p class="wn__eyebrow">{{ labels().title }} · v{{ rel.version }}</p>
+        <h2 id="wn-title" class="wn__title">{{ text(it.title) }}</h2>
+        <p class="wn__body">{{ text(it.body) }}</p>
+
+        @if (it.link; as link) {
+          @if (link.route) {
+            <a class="wn__more" [href]="link.route" (click)="followRoute($event, link.route)">
+              {{ text(link.label) || labels().more }}
+            </a>
+          } @else if (link.href) {
+            <a class="wn__more" [href]="link.href" target="_blank" rel="noopener noreferrer">
+              {{ text(link.label) || labels().more }} ↗
+            </a>
+          }
+        }
+      </div>
+
+      <footer class="wn__footer">
+        @if (isFirst()) {
+          @if (items().length > 1) {
+            <button type="button" class="wn__btn wn__btn--ghost" (click)="close()">{{ labels().skip }}</button>
+          }
+        } @else {
+          <button type="button" class="wn__btn" (click)="go(index() - 1)">{{ labels().previous }}</button>
+        }
+
+        <div class="wn__dots">
+          @if (items().length > 1) {
+            @for (dot of items(); track dot.id; let i = $index) {
+              <button type="button" class="wn__dot" [attr.aria-current]="i === index()"
+                [attr.aria-label]="labels().goTo + ' ' + (i + 1) + '/' + items().length" (click)="go(i)"></button>
+            }
+          }
+        </div>
+
+        <button type="button" class="wn__btn wn__btn--primary" (click)="next()" autofocus>
+          {{ isLast() ? labels().done : labels().next }}
+        </button>
+      </footer>
+    }
+  </dialog>
+}

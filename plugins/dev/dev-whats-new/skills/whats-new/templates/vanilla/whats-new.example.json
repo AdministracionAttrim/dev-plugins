@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "releases": [
+    {
+      "version": "1.2.0",
+      "date": "2026-10-20",
+      "items": [
+        {
+          "id": "informes-excel",
+          "title": "Informes en un clic",
+          "body": "Exporta cualquier listado a Excel desde el menú de la tabla, con los filtros que tengas aplicados.",
+          "icon": "file-spreadsheet",
+          "link": {
+            "label": "Ver informes",
+            "route": "/informes"
+          }
+        },
+        {
+          "id": "tema-oscuro",
+          "title": "Tema oscuro",
+          "body": "La aplicación sigue el tema de tu sistema. También puedes elegirlo a mano desde tu perfil.",
+          "icon": "moon"
+        },
+        {
+          "id": "panel-admin",
+          "title": {
+            "es": "Panel de administración",
+            "en": "Admin panel"
+          },
+          "body": {
+            "es": "Los administradores tienen un panel nuevo con el uso de cada módulo.",
+            "en": "Admins get a new panel with per-module usage."
+          },
+          "icon": "layout-dashboard",
+          "link": {
+            "label": "Documentación",
+            "href": "https://example.com/docs"
+          },
+          "permit": "DEMO.ADMIN"
+        }
+      ]
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-09-01",
+      "items": [
+        {
+          "id": "busqueda-global",
+          "title": "Búsqueda global",
+          "body": "Encuentra clientes, proyectos y documentos desde la barra superior.",
+          "icon": "search"
+        }
+      ]
+    }
+  ]
+}
